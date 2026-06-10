@@ -1,0 +1,6 @@
+{
+  "name": "Nur Sofa Fauzi - Motion Portfolio",
+  "description": "Interactive motion design portfolio showcasing projects by Nur Sofa Fauzi, including bumpers, commercial videos, and 2D animations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
