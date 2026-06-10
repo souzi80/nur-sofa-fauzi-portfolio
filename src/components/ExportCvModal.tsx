@@ -456,7 +456,7 @@ export function ExportCvModal({ isOpen, onClose }: ExportCvModalProps) {
                       className="font-mono text-[11px] tracking-widest uppercase mt-1.5 font-semibold"
                       style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
                     >
-                      Senior Motion Graphic Designer & Animator
+                      Motion Graphic Designer & Animator
                     </p>
                   </div>
                   
