@@ -5,6 +5,8 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import defaultProfilePhoto from "../sofa_profile.png";
 import qrCodeImage from "../sofa_fauzi_portfolio.png";
+import rctiLogo from "../rcti_logo.png";
+import ruangguruLogo from "../Ruangguru_logo.svg";
 
 // Helper to recursively strip modern layout colors like oklch, oklab, and color-mix values because html2canvas's inner CSS parser crashes on them
 function stripModernColors(cssText: string): string {
@@ -697,27 +699,41 @@ export function ExportCvModal({ isOpen, onClose }: ExportCvModalProps) {
                       </h3>
                       
                       {/* Job 1 */}
+                      {/* Job 1 */}
                       <div className="space-y-2">
-                        <div className="flex justify-between items-baseline">
-                          <h4 
-                            className="text-sm font-bold uppercase"
-                            style={{ color: isDarkTheme ? "#ffffff" : "#111827" }}
+                        <div className="flex gap-3 items-center">
+                          <div 
+                            className="w-10 h-10 rounded-md flex items-center justify-center p-1.5 shrink-0 border"
+                            style={{ 
+                              backgroundColor: isDarkTheme ? "#09090b" : "#f9fafb",
+                              borderColor: isDarkTheme ? "#18181b" : "#e5e7eb"
+                            }}
                           >
-                            Motion Graphic Designer
-                          </h4>
-                          <span 
-                            className="font-mono text-[9px]"
-                            style={{ color: isDarkTheme ? "#71717a" : "#9ca3af" }}
-                          >
-                            OCT 2022 — PRESENT
-                          </span>
+                            <img src={rctiLogo} alt="RCTI+ Logo" className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-baseline">
+                              <h4 
+                                className="text-sm font-bold uppercase"
+                                style={{ color: isDarkTheme ? "#ffffff" : "#111827" }}
+                              >
+                                Motion Graphic Designer
+                              </h4>
+                              <span 
+                                className="font-mono text-[9px]"
+                                style={{ color: isDarkTheme ? "#71717a" : "#9ca3af" }}
+                              >
+                                OCT 2022 — PRESENT
+                              </span>
+                            </div>
+                            <p 
+                              className="text-xs font-mono font-semibold tracking-wide uppercase"
+                              style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
+                            >
+                              PT MNC Digital Indonesia (RCTI+)
+                            </p>
+                          </div>
                         </div>
-                        <p 
-                          className="text-xs font-mono font-semibold tracking-wide uppercase"
-                          style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
-                        >
-                          RCTI+ (Rajawali Citra Televisi Indonesia)
-                        </p>
                         
                         <ul className="space-y-1.5 pt-1">
                           <li 
@@ -755,26 +771,39 @@ export function ExportCvModal({ isOpen, onClose }: ExportCvModalProps) {
 
                       {/* Job 2 */}
                       <div className="space-y-2">
-                        <div className="flex justify-between items-baseline">
-                          <h4 
-                            className="text-sm font-bold uppercase"
-                            style={{ color: isDarkTheme ? "#ffffff" : "#111827" }}
+                        <div className="flex gap-3 items-center">
+                          <div 
+                            className="w-10 h-10 rounded-md flex items-center justify-center p-1.5 shrink-0 border"
+                            style={{ 
+                              backgroundColor: isDarkTheme ? "#09090b" : "#f9fafb",
+                              borderColor: isDarkTheme ? "#18181b" : "#e5e7eb"
+                            }}
                           >
-                            Animator Motion Graphic
-                          </h4>
-                          <span 
-                            className="font-mono text-[9px]"
-                            style={{ color: isDarkTheme ? "#71717a" : "#9ca3af" }}
-                          >
-                            MAY 2021 — SEPT 2022
-                          </span>
+                            <img src={ruangguruLogo} alt="Ruangguru Logo" className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-baseline">
+                              <h4 
+                                className="text-sm font-bold uppercase"
+                                style={{ color: isDarkTheme ? "#ffffff" : "#111827" }}
+                              >
+                                Animator Motion Graphic
+                              </h4>
+                              <span 
+                                className="font-mono text-[9px]"
+                                style={{ color: isDarkTheme ? "#71717a" : "#9ca3af" }}
+                              >
+                                MAY 2021 — SEPT 2022
+                              </span>
+                            </div>
+                            <p 
+                              className="text-xs font-mono font-semibold tracking-wide uppercase"
+                              style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
+                            >
+                              PT. Ruang Raya Indonesia (Ruangguru)
+                            </p>
+                          </div>
                         </div>
-                        <p 
-                          className="text-xs font-mono font-semibold tracking-wide uppercase"
-                          style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
-                        >
-                          PT. Ruang Raya Indonesia (Ruangguru)
-                        </p>
                         
                         <ul className="space-y-1.5 pt-1">
                           <li 

@@ -28,6 +28,8 @@ import { ExportCvModal } from "./components/ExportCvModal";
 import defaultLogo from "../Logo.png";
 import defaultProfilePhoto from "./sofa_profile.png";
 import introVideo from "../LOGO OPENING NUR SOFA FAUZI.mp4";
+import rctiLogo from "./rcti_logo.png";
+import ruangguruLogo from "./Ruangguru_logo.svg";
 
 export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -761,7 +763,7 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
   const experiences = [
     {
       role: "Motion Graphic Designer",
-      company: "RCTI+ (Rajawali Citra Televisi Indonesia)",
+      company: "PT MNC Digital Indonesia (RCTI+)",
       period: "October 2022 — Present",
       bullets: [
         "Conceptualize and execute high-fidelity motion graphics and digital video assets to drive user acquisition and engagement for the RCTI+ OTT platform.",
@@ -769,7 +771,8 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
         "Maintain strict broadcast quality standards while managing multiple high-priority promotional projects simultaneously under tight broadcasting schedules."
       ],
       videoUrl: "https://www.youtube.com/embed/YnU4a_GdGTA?autoplay=1&mute=1&loop=1&playlist=YnU4a_GdGTA&controls=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1",
-      projectId: "rcti-showreel"
+      projectId: "rcti-showreel",
+      logo: rctiLogo
     },
     {
       role: "Animator Motion Graphic",
@@ -781,7 +784,8 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
         "Ensured visual consistency and fluid character movements across multi-episode learning series, contributing to high-quality digital content delivery."
       ],
       videoUrl: "https://www.youtube.com/embed/e1-VRh6km4c?autoplay=1&mute=1&loop=1&playlist=e1-VRh6km4c&controls=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1",
-      projectId: "ruangguru-dafa-lulu"
+      projectId: "ruangguru-dafa-lulu",
+      logo: ruangguruLogo
     }
   ];
 
@@ -927,14 +931,25 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[220px]">
                           {/* Main Work Info */}
                           <div className={`${exp.videoUrl ? "col-span-1 md:col-span-7 lg:col-span-7" : "col-span-1 md:col-span-12"} space-y-4`}>
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-zinc-900/60">
-                              <div>
-                                <h3 className="text-lg md:text-xl font-display font-bold text-white group-hover:translate-x-1 transition-transform duration-300">
-                                  {exp.role}
-                                </h3>
-                                <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest mt-1">
-                                  {exp.company}
-                                </p>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-900/60">
+                              <div className="flex items-center gap-4">
+                                {exp.logo && (
+                                  <div className="w-12 h-12 rounded-lg bg-zinc-950/80 border border-zinc-900 flex items-center justify-center p-2.5 shrink-0 group-hover:border-zinc-800 transition-all duration-300 overflow-hidden">
+                                    <img 
+                                      src={exp.logo} 
+                                      alt={`${exp.company} Logo`} 
+                                      className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-[1.2]" 
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <h3 className="text-lg md:text-xl font-display font-bold text-white group-hover:translate-x-1 transition-transform duration-300">
+                                    {exp.role}
+                                  </h3>
+                                  <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest mt-1">
+                                    {exp.company}
+                                  </p>
+                                </div>
                               </div>
                               <span className="font-mono text-xs text-zinc-500 whitespace-nowrap">
                                 {exp.period}
