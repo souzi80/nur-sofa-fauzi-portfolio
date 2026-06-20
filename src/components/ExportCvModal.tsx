@@ -5,7 +5,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import defaultProfilePhoto from "../sofa_profile.png";
 import qrCodeImage from "../sofa_fauzi_portfolio.png";
-import rctiLogo from "../rcti_logo.png";
+import rctiLogo from "../rcti_logo.svg";
 import ruangguruLogo from "../Ruangguru_logo.svg";
 
 // Helper to recursively strip modern layout colors like oklch, oklab, and color-mix values because html2canvas's inner CSS parser crashes on them

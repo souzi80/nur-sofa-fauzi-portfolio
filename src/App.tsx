@@ -28,7 +28,7 @@ import { ExportCvModal } from "./components/ExportCvModal";
 import defaultLogo from "../Logo.png";
 import defaultProfilePhoto from "./sofa_profile.png";
 import introVideo from "../LOGO OPENING NUR SOFA FAUZI.mp4";
-import rctiLogo from "./rcti_logo.png";
+import rctiLogo from "./rcti_logo.svg";
 import ruangguruLogo from "./Ruangguru_logo.svg";
 
 export default function App() {
