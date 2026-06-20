@@ -730,7 +730,7 @@ export function ExportCvModal({ isOpen, onClose }: ExportCvModalProps) {
                               className="text-xs font-mono font-semibold tracking-wide uppercase"
                               style={{ color: isDarkTheme ? "#10b981" : "#059669" }}
                             >
-                              PT MNC Digital Indonesia (RCTI+)
+                              PT. MNC Digital Indonesia (RCTI+)
                             </p>
                           </div>
                         </div>

@@ -763,7 +763,7 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
   const experiences = [
     {
       role: "Motion Graphic Designer",
-      company: "PT MNC Digital Indonesia (RCTI+)",
+      company: "PT. MNC Digital Indonesia (RCTI+)",
       period: "October 2022 — Present",
       bullets: [
         "Conceptualize and execute high-fidelity motion graphics and digital video assets to drive user acquisition and engagement for the RCTI+ OTT platform.",
