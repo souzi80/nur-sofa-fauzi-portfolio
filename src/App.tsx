@@ -194,6 +194,125 @@ function Navbar({ onMenuToggle, isPlayingIntro, isIntroLeaving }: { onMenuToggle
   );
 }
 
+function RetroTV({ 
+  title, 
+  icon, 
+  scrollToId, 
+  tilt, 
+  smileSide = "left", 
+  badge = "MINE", 
+  delay = 0 
+}: { 
+  title: string; 
+  icon: React.ReactNode; 
+  scrollToId: string; 
+  tilt: number; 
+  smileSide?: "left" | "right"; 
+  badge?: string; 
+  delay?: number; 
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 40, rotate: tilt - 6 }}
+      animate={{ opacity: 1, scale: 1, y: 0, rotate: tilt }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 90, 
+        damping: 15, 
+        delay: delay 
+      }}
+      whileHover={{ 
+        y: -12, 
+        scale: 1.06, 
+        rotate: tilt * 0.4, 
+        transition: { type: "spring", stiffness: 300, damping: 12 } 
+      }}
+      onClick={() => {
+        const element = document.getElementById(scrollToId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }}
+      className="cursor-pointer group relative w-full aspect-[4/3] bg-zinc-100 border-[3px] border-zinc-300 rounded-[18px] shadow-[6px_8px_0px_rgba(16,185,129,0.3),inset_-4px_-4px_0px_#869fa3,inset_3px_3px_0px_#ffffff] p-2 flex flex-col justify-between"
+    >
+      {/* Super Cute Yellow Smile sticker on Bezel */}
+      {smileSide === "left" ? (
+        <div className="absolute -top-3 left-4 w-6 h-6 rounded-full bg-yellow-300 border border-yellow-400 flex items-center justify-center text-[10px] rotate-[-12deg] shadow-md z-20 select-none group-hover:scale-110 group-hover:rotate-0 transition-all duration-300">
+          😊
+        </div>
+      ) : (
+        <div className="absolute -top-3 right-4 w-6 h-6 rounded-full bg-amber-300 border border-amber-400 flex items-center justify-center text-[10px] rotate-[15deg] shadow-md z-20 select-none group-hover:scale-110 group-hover:rotate-0 transition-all duration-300">
+          ⭐
+        </div>
+      )}
+
+      {/* Styled badge sticker on Bezel */}
+      <div className="absolute -bottom-2.5 right-4 bg-rose-400 text-white font-bold font-sans text-[7px] tracking-tight px-1.5 py-0.5 rounded-[4px] border border-rose-500 rotate-[8deg] shadow-sm z-20 select-none uppercase group-hover:scale-110 transition-transform duration-300">
+        {badge}
+      </div>
+
+      {/* Main Face Container */}
+      <div className="flex h-full w-full gap-1.5">
+        {/* Glow-Tube CRT Screen */}
+        <div className="w-[76%] h-full bg-[#04120f] border-2 border-slate-400 rounded-[11px] overflow-hidden relative shadow-[inset_0_0_12px_rgba(0,0,0,0.95)] flex flex-col items-center justify-center p-2">
+          {/* Phosphor glass gradient background with hover screen brightening */}
+          <div className="absolute inset-0 bg-radial-gradient bg-gradient-to-b from-emerald-800/80 to-teal-950/95 group-hover:from-emerald-700/90 group-hover:to-teal-900 transition-all duration-300" />
+          
+          {/* Phosphor glowing center */}
+          <div className="absolute w-[80%] aspect-square rounded-full bg-emerald-400/20 blur-[20px] pointer-events-none group-hover:bg-emerald-300/35 transition-all duration-300" />
+
+          {/* Retro phosphor Scanline list overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.22)_50%)] bg-[size:100%_4px] pointer-events-none opacity-90 mix-blend-overlay" />
+
+          {/* Screen Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center h-full w-full gap-1">
+            {/* Pulsating Glowing Icon */}
+            <motion.div 
+              animate={{ y: [0, -2, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut", delay: delay * 0.5 }}
+              className="flex justify-center items-center h-[52%] w-full"
+            >
+              {icon}
+            </motion.div>
+
+            {/* Glowing Retro Text */}
+            <div className="font-display font-semibold text-center text-[10px] md:text-[11px] leading-tight text-white tracking-wide uppercase drop-shadow-[0_0_5px_rgba(16,185,129,0.7)] h-[35%] flex items-center justify-center">
+              {title}
+            </div>
+          </div>
+
+          {/* Glare Glass reflection overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none rounded-[9px]" />
+        </div>
+
+        {/* Right TV control hardware panel */}
+        <div className="w-[24%] h-full flex flex-col items-center justify-start py-1.5 gap-2.5 bg-slate-200/50 rounded-[4px] border border-slate-300/50">
+          {/* Small knobs */}
+          <div className="w-4 h-4 bg-slate-300 rounded-full border border-slate-400 shadow-inner flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform duration-100">
+            <div className="w-1 h-2 bg-slate-500 rounded-full absolute top-0" style={{ transform: "rotate(30deg) translateY(-0.5px)" }} />
+          </div>
+          <div className="w-4 h-4 bg-slate-300 rounded-full border border-slate-400 shadow-inner flex items-center justify-center relative cursor-pointer active:scale-95 transition-transform duration-100">
+            <div className="w-1 h-2 bg-slate-500 rounded-full absolute top-0" style={{ transform: "rotate(-45deg) translateY(-0.5px)" }} />
+          </div>
+
+          {/* Speaker slots */}
+          <div className="flex flex-col gap-0.5 w-[60%] my-1 select-none">
+            <div className="h-[2px] bg-slate-300 rounded-full" />
+            <div className="h-[2px] bg-slate-300 rounded-full" />
+            <div className="h-[2px] bg-slate-300 rounded-full" />
+            <div className="h-[2px] bg-slate-300 rounded-full" />
+          </div>
+
+          {/* Blinking indicator LED */}
+          <div className="flex flex-col items-center justify-end flex-grow">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.9)] animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boolean; isIntroLeaving: boolean }) {
   const isHidden = isPlayingIntro && !isIntroLeaving;
   const containerRef = useRef(null);
@@ -202,8 +321,8 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
     offset: ["start start", "end start"]
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const scrollOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const scrollOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   const [kineticIndex, setKineticIndex] = useState(0);
   const kineticWords = [
@@ -213,8 +332,6 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
     "SHOWREELS",
     "CREATOR"
   ];
-
-
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -250,132 +367,171 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
   };
 
   return (
-    <section ref={containerRef} className="relative min-h-[100svh] lg:h-screen flex items-center pt-28 pb-12 lg:py-0 px-6 md:px-12 overflow-hidden">
-      {/* Viewport/Camera Brackets and Crosshairs with entry animations */}
+    <section 
+      ref={containerRef} 
+      className="relative min-h-screen flex flex-col justify-center items-center pt-28 pb-16 px-6 md:px-12 overflow-hidden bg-transparent gap-8 md:gap-14"
+    >
+      {/* Blueprint Grid Blueprint Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20 z-0 bg-transparent"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(16, 185, 129, 0.08) 1.5px, transparent 1.5px),
+            linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1.5px, transparent 1.5px)
+          `,
+          backgroundSize: "45px 45px"
+        }}
+      />
+
+      {/* Cyber/Technical Blueprint Corner Accents */}
       <motion.div
         animate={{ opacity: isHidden ? 0 : 1 }}
         transition={{ duration: 1 }}
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none z-10 select-none pb-6"
       >
-        <div className="absolute top-28 left-6 md:left-12 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex items-center justify-center">
-          <span className="text-emerald-500 font-mono text-sm select-none font-black animate-pulse">+</span>
-          <span className="absolute left-4 font-mono text-[8px] text-zinc-500 uppercase tracking-widest hidden sm:inline whitespace-nowrap">CAM_A // VIEWPOINT</span>
+        {/* Diamond sparkling points inside corners */}
+        <div className="absolute top-28 left-6 md:left-12 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+          <span className="text-emerald-400 font-mono text-sm select-none font-bold animate-pulse">◆</span>
+          <span className="absolute left-4 font-mono text-[8px] text-emerald-500/50 uppercase tracking-widest hidden sm:inline whitespace-nowrap">CAM_01 // SEC_02</span>
         </div>
-        <div className="absolute top-28 right-6 md:right-12 translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex items-center justify-center">
-          <span className="text-emerald-500 font-mono text-sm select-none font-black animate-pulse">+</span>
-          <span className="absolute right-4 font-mono text-[8px] text-zinc-500 uppercase tracking-widest hidden sm:inline whitespace-nowrap">REC_RE // SL_01</span>
+        <div className="absolute top-28 right-6 md:right-12 translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+          <span className="text-emerald-400 font-mono text-sm select-none font-bold animate-pulse">◆</span>
+          <span className="absolute right-4 font-mono text-[8px] text-emerald-500/50 uppercase tracking-widest hidden sm:inline whitespace-nowrap">VIEWPOINT_SYS // BP_04</span>
         </div>
-        <div className="absolute bottom-16 left-6 md:left-12 -translate-x-1/2 translate-y-1/2 z-20 pointer-events-none flex items-center justify-center">
-          <span className="text-emerald-500 font-mono text-sm select-none font-black">+</span>
+        <div className="absolute bottom-12 left-6 md:left-12 -translate-x-1/2 translate-y-1/2 z-20 flex items-center justify-center">
+          <span className="text-emerald-400 font-mono text-sm select-none font-bold">◆</span>
         </div>
-        <div className="absolute bottom-16 right-6 md:right-12 translate-x-1/2 translate-y-1/2 z-20 pointer-events-none flex items-center justify-center">
-          <span className="text-emerald-500 font-mono text-sm select-none font-black">+</span>
-        </div>
-
-        {/* Spinning technical motion vector aperture */}
-        <div className="absolute right-[8%] top-[12%] w-[320px] md:w-[480px] aspect-square pointer-events-none opacity-[0.14] animate-spin duration-[40000ms] ease-linear">
-          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.3" className="text-zinc-700 w-full h-full">
-            <circle cx="50" cy="50" r="46" strokeDasharray="2,2" />
-            <circle cx="50" cy="50" r="38" />
-            <circle cx="50" cy="50" r="24" strokeDasharray="1,1" />
-            <path d="M 50 4 L 50 96 M 4 50 L 96 50" strokeDasharray="1,2" />
-            <polygon points="50,15 54,25 65,25 57,32 61,42 50,35 39,42 43,32 35,25 46,25" strokeDasharray="0.5,0.5" />
-            <path d="M 50 4 A 46 45 0 0 1 96 50" strokeWidth="0.8" className="stroke-emerald-500" />
-            <path d="M 50 96 A 46 45 0 0 1 4 50" strokeWidth="0.8" className="stroke-cyan-500" />
-          </svg>
+        <div className="absolute bottom-12 right-6 md:right-12 translate-x-1/2 translate-y-1/2 z-20 flex items-center justify-center">
+          <span className="text-emerald-400 font-mono text-sm select-none font-bold">◆</span>
         </div>
 
-        {/* Live active coordinate node */}
-        <div className="absolute left-8 md:on-left top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 font-mono text-[8px] text-zinc-500 tracking-[0.3em] uppercase hidden xl:flex items-center gap-3">
-          <span className="w-2 h-[1px] bg-emerald-500" />
-          SYS-GRID // COORD_X: 192.168.1.30 // ACTIVE_RENDERING
+        {/* Live Active Coordinates */}
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 font-mono text-[8px] text-emerald-500/40 tracking-[0.3em] uppercase hidden xl:flex items-center gap-3">
+          <span className="w-3 h-[1px] bg-emerald-400" />
+          SYS_CRT_GRID // COORD_Z: 4096.22X // SYSTEM_DEPLOYED_STABLE
         </div>
       </motion.div>
 
-      <motion.div style={{ y, opacity: scrollOpacity }} className="relative z-10 w-full">
-        <motion.div
-          animate={{ opacity: isHidden ? 0 : 1, y: isHidden ? 30 : 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.div
-            initial={{ opacity: 0, x: -25 }}
-            animate={isHidden ? { opacity: 0 } : { opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-6 font-mono text-xs tracking-widest text-emerald-400 font-bold uppercase flex items-center gap-2"
+      {/* Floating Retro Designer Handwork Vector Accents */}
+      {!isHidden && (
+        <div className="absolute inset-0 pointer-events-none z-10 select-none overflow-hidden">
+          {/* Eyedropper / Pipette */}
+          <motion.div 
+            animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
+            className="absolute left-[38%] top-[55%] hidden xl:block text-emerald-500/30"
           >
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Creative Motion Designer & 2D Animator
-        </motion.div>
-        
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 w-full">
-          <div className="flex flex-col justify-start select-none">
-            <motion.h1 
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              className="text-[12vw] md:text-[10vw] font-display font-black leading-[0.85] tracking-tighter text-white"
-            >
-              MOTION
-            </motion.h1>
-            
-            {/* Kinetic rotating row */}
-            <div 
-              style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-              className="relative overflow-visible h-[1.35em] md:h-[1.10em] text-[12vw] md:text-[10vw] font-display font-black leading-[0.85] tracking-tighter text-white min-w-[300px] sm:min-w-[420px] md:min-w-[550px] lg:min-w-[600px]"
-            >
-              <AnimatePresence mode="popLayout">
-                <motion.span
-                  key={kineticIndex}
-                  initial={{ rotateX: 90, opacity: 0, scale: 0.95 }}
-                  animate={{ rotateX: 0, opacity: 1, scale: 1 }}
-                  exit={{ rotateX: -90, opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="text-edge-glow absolute left-0 top-0 whitespace-nowrap inline-block"
-                >
-                  {kineticWords[kineticIndex]}
-                </motion.span>
-              </AnimatePresence>
+            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path d="M11 4l8 8M18 11.5l1.5-1.5a2.5 2.5 0 0 0-3.5-3.5L14.5 8M9 16l-5 5h-1v-1l5-5M15 11l-5.5 5.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </motion.div>
+
+          {/* Graphic calligraphy pen tool */}
+          <motion.div 
+            animate={{ y: [0, 8, 0], rotate: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            className="absolute right-[33%] top-[48%] hidden xl:block text-emerald-500/30"
+          >
+            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v8M9 11h6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </motion.div>
+
+          {/* Big Letter T Text Tool */}
+          <motion.div 
+            animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
+            transition={{ repeat: Infinity, duration: 3.8, ease: "easeInOut" }}
+            className="absolute left-[8%] bottom-[42%] hidden xl:block text-emerald-500/25 font-display font-black text-5xl"
+          >
+            T
+          </motion.div>
+
+          {/* Compass / Painting brush tool representation */}
+          <motion.div 
+            animate={{ y: [0, 6, 0], rotate: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 4.2, ease: "easeInOut", delay: 0.5 }}
+            className="absolute right-[12%] bottom-[25%] hidden xl:block text-emerald-500/35"
+          >
+            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path d="M18 22H6M12 2v20M12 2A10 10 0 0 1 22 12M12 2A10 10 0 0 0 2 12" strokeLinecap="round"/>
+            </svg>
+          </motion.div>
+
+          {/* Giga-Retro 8-Bit Checkerboard Accent Left */}
+          <div className="absolute left-[5%] top-[18%] w-10 h-24 opacity-[0.25] hidden xl:flex flex-col gap-0.5">
+            <div className="grid grid-cols-4 gap-0.5 w-full h-full">
+              {Array.from({ length: 24 }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`aspect-square rounded-[3px] ${
+                    ((Math.floor(i / 4) + (i % 4)) % 2 === 0) 
+                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]" 
+                      : "bg-transparent"
+                  }`} 
+                />
+              ))}
             </div>
           </div>
 
-          {/* Glowing NSF Design Logo */}
+          {/* Giga-Retro 8-Bit Checkerboard Accent Right */}
+          <div className="absolute right-[5%] top-[22%] w-10 h-24 opacity-[0.25] hidden xl:flex flex-col gap-0.5">
+            <div className="grid grid-cols-4 gap-0.5 w-full h-full">
+              {Array.from({ length: 24 }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`aspect-square rounded-[3px] ${
+                    ((Math.floor(i / 4) + (i % 4)) % 2 === 1) 
+                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]" 
+                      : "bg-transparent"
+                  }`} 
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Center Blueprint Header Panel */}
+      <motion.div 
+        style={{ y, opacity: scrollOpacity }} 
+        className="relative z-10 w-full max-w-7xl mx-auto flex flex-col justify-center items-center pointer-events-none mt-6"
+      >
+        <motion.div
+          animate={{ opacity: isHidden ? 0 : 1, y: isHidden ? 30 : 0 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full flex flex-col items-center justify-center text-center relative"
+        >
+          {/* Centered Glowing Sofa's Official Logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.5 }}
-            className="relative flex items-center justify-center lg:justify-end shrink-0 xl:mr-16"
+            animate={{ opacity: isHidden ? 0 : 1, scale: isHidden ? 0.8 : 1 }}
+            transition={{ duration: 1.1, delay: 0.3 }}
+            className="relative flex items-center justify-center mb-4 z-20 pointer-events-auto"
           >
-            {/* Spinning background outline ring */}
+            {/* Ambient Spinning Orbit Outline */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[247px] h-[247px] md:w-[325px] md:h-[325px] rounded-full border border-dashed border-emerald-500/20 animate-spin duration-[30000ms]" />
+              <div className="w-[90px] h-[90px] md:w-[112px] md:h-[112px] rounded-full border border-dashed border-emerald-400/25 animate-spin duration-[30000ms]" />
             </div>
-            
+
             {!logoErrorAll ? (
               <img 
                 src={logoPaths[currentLogoIndex]} 
                 alt="NSF Design Logo" 
                 onError={handleLogoError}
                 referrerPolicy="no-referrer"
-                className="w-[234px] h-[234px] md:w-[312px] md:h-[312px] object-contain select-none pointer-events-none transition-all duration-300"
+                className="w-20 h-20 md:w-24 md:h-24 object-contain select-none pointer-events-none transition-all duration-300"
                 style={{
-                  filter: "brightness(0) invert(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 15px rgba(16, 185, 129, 0.5))"
+                  filter: "brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 12px rgba(16, 185, 129, 0.6))"
                 }}
               />
             ) : (
-              <svg viewBox="0 0 300 300" className="w-[234px] h-[234px] md:w-[312px] md:h-[312px] drop-shadow-[0_0_24px_rgba(16,185,129,0.2)]" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg viewBox="0 0 300 300" className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_16px_rgba(16,185,129,0.4)]" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="logoGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#10b981" /> {/* Luminous Emerald */}
-                    <stop offset="50%" stopColor="#14b8a6" /> {/* Radiant Teal */}
-                    <stop offset="100%" stopColor="#06b6d4" /> {/* Bright Cyan */}
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#14b8a6" />
                   </linearGradient>
-                  <filter id="logoSubtleBloom" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
                 </defs>
-
-                {/* Logo Circle Outline with Gradient and Subtle Glow */}
                 <circle 
                   cx="150" 
                   cy="140" 
@@ -383,21 +539,8 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
                   stroke="#ffffff" 
                   strokeWidth="2.5" 
                   fill="none" 
-                  style={{ filter: "drop-shadow(0 0 2px rgba(255,255,255,0.6)) drop-shadow(0 0 6px rgba(16,185,129,0.4))" }}
-                  className="opacity-90"
+                  style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.5))" }}
                 />
-                <circle 
-                  cx="150" 
-                  cy="140" 
-                  r="84" 
-                  stroke="url(#logoGlowGrad)" 
-                  strokeWidth="1.2" 
-                  fill="none" 
-                  className="opacity-60"
-                />
-
-                {/* Logo Letters "NSF" */}
-                {/* N with crisp geometric corners */}
                 <path 
                   d="M 68 185 L 68 85 L 118 185 L 118 85" 
                   stroke="#ffffff" 
@@ -405,10 +548,8 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
                   strokeLinecap="square" 
                   strokeLinejoin="miter"
                   fill="none" 
-                  style={{ filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(16,185,129,0.5))" }}
+                  style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.6))" }}
                 />
-
-                {/* S curve following the patented design */}
                 <path 
                   d="M 172 105 C 172 87, 126 87, 126 116 C 126 142, 172 136, 172 159 C 172 187, 122 187, 122 170" 
                   stroke="#ffffff" 
@@ -416,23 +557,8 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
                   strokeLinecap="square" 
                   strokeLinejoin="round"
                   fill="none" 
-                  style={{ filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(16,185,129,0.5))" }}
+                  style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.6))" }}
                 />
-                {/* Patented parallel line details in the S curve */}
-                <path 
-                  d="M 124 113 L 144 113 M 124 119 L 144 119" 
-                  stroke="url(#logoGlowGrad)" 
-                  strokeWidth="2.5" 
-                  strokeLinecap="square"
-                />
-                <path 
-                  d="M 152 153 L 172 153 M 152 159 L 172 159" 
-                  stroke="url(#logoGlowGrad)" 
-                  strokeWidth="2.5" 
-                  strokeLinecap="square"
-                />
-
-                {/* F with bold geometric flat-caps */}
                 <path 
                   d="M 198 185 L 198 85 L 242 85 M 198 131 L 228 131" 
                   stroke="#ffffff" 
@@ -440,51 +566,196 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
                   strokeLinecap="square" 
                   strokeLinejoin="miter"
                   fill="none" 
-                  style={{ filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(16,185,129,0.5))" }}
+                  style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.6))" }}
                 />
-
-                {/* Text "Design" */}
-                <text 
-                  x="150" 
-                  y="245" 
-                  textAnchor="middle" 
-                  fill="#ffffff" 
-                  className="font-sans font-bold text-[20px] tracking-[0.45em] uppercase"
-                  style={{ 
-                    letterSpacing: '0.45em', 
-                    fontFamily: 'system-ui, sans-serif',
-                    filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(16,185,129,0.5))"
-                  }}
-                >
-                  D e s i g n
-                </text>
               </svg>
             )}
           </motion.div>
-        </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mt-12 flex flex-col md:flex-row md:items-end justify-between gap-8"
-        >
-          <p className="max-w-md text-zinc-400 font-light leading-relaxed">
-            Specializing in dynamic visual storytelling, 2D animation, and high-impact event bumpers for industry leaders.
-          </p>
-          
-          <div className="flex gap-6">
-             <SocialIcon icon={<Linkedin size={18} />} href="https://www.linkedin.com/in/sofa-fauzi-197606392/" />
-             <SocialIcon icon={<Instagram size={18} />} href="https://www.instagram.com/so_sangart/?utm_source=ig_web_button_share_sheet" />
-             <SocialIcon icon={<Youtube size={18} />} href="https://youtube.com/@nsofafauzi7676?si=oTZ0tsZV7J-SR6Yk" />
+          {/* Subtitle Bumper Tag */}
+          <div className="font-mono text-[9px] md:text-[10px] tracking-[0.4em] text-emerald-400 font-bold uppercase mb-2">
+            CREATIVE MOTION DESIGNER & ANIMATOR
+          </div>
+
+          {/* Bold Sans-Serif Glowing Big Title with kinetic rotating text - BEAUTIFUL ASYMMETRICAL EDIT */}
+          <div className="relative flex flex-col items-center justify-center py-10 sm:py-12 w-full select-none overflow-visible">
+            {/* Blueprint grid line structure crossing asymmetrically */}
+            <div className="absolute w-[90%] h-[1px] bg-emerald-500/12 top-1/2 left-[5%]" />
+            <div className="absolute w-[1px] h-28 bg-emerald-500/8 left-[15%] top-0" />
+            <div className="absolute w-[1px] h-28 bg-emerald-500/8 right-[25%] bottom-0" />
+
+            {/* Asymmetrical Frame Container */}
+            <div className="relative z-10 flex flex-col w-full max-w-[320px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[720px] mx-auto px-2 gap-0 overflow-visible">
+              
+              {/* Upper-Left Aligned: MOTION */}
+              <div className="flex items-baseline gap-3 self-start pl-1 sm:pl-4 md:pl-8 z-10">
+                <motion.h1 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
+                  className="font-display font-black text-[13.5vw] sm:text-[11vw] md:text-[9.5vw] lg:text-[8.5vw] xl:text-[9vw] text-white leading-none tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] uppercase"
+                >
+                  MOTION
+                </motion.h1>
+              </div>
+
+              {/* Lower-Right Aligned Kinetic Text inside size-matched container with negative margin for overlapping/tighter look */}
+              <div className="flex items-center justify-end self-end pr-1 sm:pr-4 md:pr-8 h-[10vw] sm:h-[8.5vw] md:h-[7.5vw] lg:h-[6.8vw] xl:h-[7.2vw] relative overflow-visible w-full mt-[-1.5vw] sm:mt-[-2vw] md:mt-[-2.5vw] z-20">
+                <div className="relative w-full text-right h-full min-w-[200px] sm:min-w-[300px] flex items-center justify-end">
+                  <div className="relative h-full inline-block min-w-[140px] sm:min-w-[220px] md:min-w-[280px]">
+                    <AnimatePresence mode="popLayout">
+                      <motion.span 
+                        key={kineticIndex}
+                        initial={{ rotateX: 90, opacity: 0, scale: 0.95 }}
+                        animate={{ rotateX: 0, opacity: 1, scale: 1 }}
+                        exit={{ rotateX: -90, opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="absolute right-0 top-0 font-display font-black tracking-tighter text-[10vw] sm:text-[8.5vw] md:text-[7.5vw] lg:text-[6.8vw] xl:text-[7.2vw] text-transparent [-webkit-text-stroke:1px_rgba(52,211,153,0.9)] sm:[-webkit-text-stroke:1.8px_rgba(52,211,153,0.95)] drop-shadow-[0_0_15px_rgba(16,185,129,0.55)] uppercase whitespace-nowrap leading-none"
+                      >
+                        {kineticWords[kineticIndex]}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+
+          {/* Exploration Action capsule buttons */}
+          <div className="mt-6 sm:mt-8 md:mt-12 pointer-events-auto z-20">
+            <button 
+              className="px-6 py-2 border border-emerald-400/80 hover:border-emerald-400 bg-emerald-950/40 text-emerald-200 font-display font-medium text-xs tracking-[0.2em] rounded-[6px] transition-all duration-300 hover:shadow-[0_0_18px_rgba(16,185,129,0.5)] hover:bg-emerald-900/30 hover:scale-105 uppercase cursor-pointer"
+              onClick={() => {
+                const worksSection = document.getElementById("work");
+                if (worksSection) {
+                  worksSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
+            >
+              Table of contents
+            </button>
           </div>
         </motion.div>
       </motion.div>
-    </motion.div>
 
-      {/* Decorative background element — Dual ambient light-mesh glow */}
-      <div className="absolute top-1/3 right-[-10%] w-[55%] aspect-square rounded-full bg-emerald-500/12 blur-[130px] -z-10 animate-pulse duration-[12000ms]" />
-      <div className="absolute bottom-1/4 left-[-10%] w-[40%] aspect-square rounded-full bg-cyan-500/10 blur-[125px] -z-10 animate-pulse duration-[10000ms]" />
+      {/* Retro CRT TV Monitors Grid / Bento layout */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto my-2 pointer-events-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-2 sm:px-6">
+          <RetroTV
+            title="Profile"
+            scrollToId="experience"
+            tilt={-5}
+            smileSide="left"
+            badge="SOFA"
+            delay={0.1}
+            icon={
+              <svg viewBox="0 0 100 100" className="w-10 h-10 text-emerald-300 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="50" cy="50" r="32" />
+                <path d="M22 42 Q35 24 50 32 Q65 24 78 42" stroke="currentColor" fill="none" strokeLinecap="round" />
+                <circle cx="38" cy="48" r="3.5" fill="currentColor" className="animate-pulse" />
+                <circle cx="62" cy="48" r="3.5" fill="currentColor" className="animate-pulse" />
+                <circle cx="28" cy="56" r="2.5" fill="#ff7096" stroke="none" />
+                <circle cx="72" cy="56" r="2.5" fill="#ff7096" stroke="none" />
+                <path d="M42 58 Q50 67 58 58" stroke="currentColor" strokeLinecap="round" fill="none" />
+              </svg>
+            }
+          />
+
+          <RetroTV
+            title="Showreel"
+            scrollToId="showreel"
+            tilt={6}
+            smileSide="right"
+            badge="BRANDS"
+            delay={0.2}
+            icon={
+              <svg viewBox="0 0 100 100" className="w-10 h-10 text-emerald-300 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {/* Board main plate */}
+                <rect x="20" y="46" width="60" height="32" rx="3" />
+                
+                {/* Horizontal slate divisions */}
+                <line x1="20" y1="58" x2="80" y2="58" />
+                <line x1="40" y1="58" x2="40" y2="78" />
+                <line x1="60" y1="58" x2="60" y2="78" />
+                
+                {/* Decorative slate writing lines */}
+                <line x1="25" y1="52" x2="35" y2="52" strokeWidth="1.5" />
+                <line x1="45" y1="52" x2="55" y2="52" strokeWidth="1.5" />
+                <line x1="65" y1="52" x2="75" y2="52" strokeWidth="1.5" />
+                
+                {/* Static base clapper zebra bar */}
+                <path d="M20 40 h60 v6 h-60 z" fill="currentColor" fillOpacity="0.1" />
+                <line x1="25" y1="40" x2="31" y2="46" strokeWidth="2" />
+                <line x1="37" y1="40" x2="43" y2="46" strokeWidth="2" />
+                <line x1="49" y1="40" x2="55" y2="46" strokeWidth="2" />
+                <line x1="61" y1="40" x2="67" y2="46" strokeWidth="2" />
+                <line x1="73" y1="40" x2="79" y2="46" strokeWidth="2" />
+                
+                {/* Tilted upper clapper bar (open / action state) */}
+                <g transform="rotate(-15 20 40)">
+                  <rect x="20" y="32" width="60" height="6.5" rx="1.5" fill="currentColor" fillOpacity="0.2" />
+                  <line x1="25" y1="32" x2="31" y2="38.5" strokeWidth="2" />
+                  <line x1="37" y1="32" x2="43" y2="38.5" strokeWidth="2" />
+                  <line x1="49" y1="32" x2="55" y2="38.5" strokeWidth="2" />
+                  <line x1="61" y1="32" x2="67" y2="38.5" strokeWidth="2" />
+                  <line x1="73" y1="32" x2="79" y2="38.5" strokeWidth="2" />
+                </g>
+                
+                {/* Pivot hinge joint */}
+                <circle cx="20" cy="40" r="2.5" fill="#10b981" />
+              </svg>
+            }
+          />
+
+          <RetroTV
+            title="Selected Project"
+            scrollToId="work"
+            tilt={-4}
+            smileSide="left"
+            badge="BUMPER"
+            delay={0.3}
+            icon={
+              <svg viewBox="0 0 100 100" className="w-10 h-10 text-emerald-300 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <rect x="20" y="32" width="40" height="34" rx="4" />
+                <polygon points="63,40 82,30 82,68 63,58" fill="none" />
+                <circle cx="32" cy="49" r="5" strokeDasharray="2 1" />
+                <circle cx="48" cy="49" r="5" strokeDasharray="2 1" />
+              </svg>
+            }
+          />
+
+          <RetroTV
+            title="Social Media"
+            scrollToId="contact"
+            tilt={8}
+            smileSide="right"
+            badge="ONLINE"
+            delay={0.4}
+            icon={
+              <div className="flex flex-col items-center justify-center gap-1.5 w-full">
+                <svg viewBox="0 0 100 100" className="w-8 h-8 text-emerald-300" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="50" cy="50" r="26" strokeDasharray="3 3" />
+                  <path d="M25 50 Q50 30 75 50 Q50 70 25 50" />
+                  <line x1="50" y1="24" x2="50" y2="76" />
+                  <circle cx="50" cy="50" r="4" fill="currentColor" />
+                </svg>
+                <div className="flex gap-1 items-center justify-center text-emerald-400">
+                  <Instagram size={10} className="stroke-[2.5]" />
+                  <Youtube size={10} className="stroke-[2.5]" />
+                  <Linkedin size={10} className="stroke-[2.5]" />
+                </div>
+              </div>
+            }
+          />
+        </div>
+      </div>
+
+      {/* Decorative background spotlights — Dual ambient emerald/green spotlights */}
+      <div className="absolute top-1/4 right-[-10%] w-[55%] aspect-square rounded-full bg-emerald-950/10 blur-[130px] -z-10 animate-pulse duration-[12000ms] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-[-10%] w-[45%] aspect-square rounded-full bg-emerald-500/5 blur-[125px] -z-10 animate-pulse duration-[10000ms] pointer-events-none" />
     </section>
   );
 }
@@ -672,10 +943,76 @@ function HoverProjectCard({ project, idx, onSelect }: { project: Project; idx: n
           return (
             <div 
               key={cat.id} 
-              className="isolate space-y-4 md:space-y-6 relative p-6 md:p-10 rounded-3xl border border-zinc-900/60 bg-zinc-950/25 overflow-hidden transition-all duration-300 shadow-xl"
+              className="isolate relative rounded-2xl border bg-[#070913] overflow-hidden transition-all duration-300 shadow-[0_22px_60px_rgba(0,0,0,0.85)] border-emerald-500/10 flex flex-col"
             >
+              {/* macOS Browser Header Mockup */}
+              <div className="w-full h-10 sm:h-11 bg-[#161720] border-b border-zinc-950/50 px-3 sm:px-4 flex items-center justify-between select-none shrink-0 pointer-events-auto z-20">
+                {/* Left controls */}
+                <div className="flex items-center gap-3.5 sm:gap-4">
+                  {/* Window control lights */}
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f]" />
+                  </div>
+                  
+                  {/* Sidebar toggle icon */}
+                  <div className="hidden sm:flex items-center gap-1 text-zinc-500/80">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="18" height="18" x="3" y="3" rx="2" />
+                      <path d="M9 3v18" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 translate-y-[0.5px]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </div>
+
+                  {/* Navigation Back & Forward glyphs */}
+                  <div className="hidden md:flex items-center gap-3 text-zinc-600 ml-1">
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 cursor-not-allowed hover:text-zinc-500" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m15 18-6-6 6-6" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 cursor-not-allowed hover:text-zinc-500" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Centered browser search / url identifier bar */}
+                <div className="flex-1 max-w-xs sm:max-w-md mx-3">
+                  <div className="w-full h-6 sm:h-7 bg-[#23242e]/80 border border-zinc-950/25 rounded-md flex items-center justify-start px-2 sm:px-3 text-zinc-500">
+                    <svg viewBox="0 0 24 24" className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Right toolbar controls */}
+                <div className="flex items-center gap-3 sm:gap-4 text-zinc-500">
+                  {/* Share */}
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" x2="12" y1="2" y2="15" />
+                  </svg>
+
+                  {/* Plus */}
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" x2="12" y1="5" y2="19" />
+                    <line x1="5" x2="19" y1="12" y2="12" />
+                  </svg>
+
+                  {/* Tab Grid layers */}
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-[#06b6d4] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="12" height="12" x="8" y="8" rx="1.5" />
+                    <path d="M4 12V6a2 2 0 0 1 2-2h6" />
+                  </svg>
+                </div>
+              </div>
+
               {/* Dynamic 10% blurred background corresponding to active category project */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 rounded-3xl select-none">
+              <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 rounded-2xl select-none">
                 <AnimatePresence mode="popLayout">
                   {cat.projects[currentActive] && (
                     <motion.div
@@ -699,45 +1036,48 @@ function HoverProjectCard({ project, idx, onSelect }: { project: Project; idx: n
                 </AnimatePresence>
               </div>
 
-              {/* Category Header */}
-              <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-900/60 pb-6 gap-6 z-10 relative">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs text-zinc-400 tracking-wider font-bold">{cat.num} //</span>
-                    <h3 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase">{cat.title}</h3>
+              {/* Main content body with padding */}
+              <div className="p-6 md:p-10 pt-4 md:pt-6 space-y-4 md:space-y-6 relative flex-1 flex flex-col justify-between">
+                {/* Category Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-900/60 pb-6 gap-6 z-10 relative">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-zinc-400 tracking-wider font-bold">{cat.num} //</span>
+                      <h3 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase">{cat.title}</h3>
+                    </div>
+                    <p className="max-w-xl text-zinc-400 text-xs md:text-sm font-light leading-relaxed">
+                      {cat.description}
+                    </p>
                   </div>
-                  <p className="max-w-xl text-zinc-400 text-xs md:text-sm font-light leading-relaxed">
-                    {cat.description}
-                  </p>
+
+                  {/* Slider Control Buttons */}
+                  <div className="flex items-center gap-2 self-end">
+                    <button 
+                      onClick={() => handlePrev(cat.id, cat.projects.length)}
+                      className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleNext(cat.id, cat.projects.length)}
+                      className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Slider Control Buttons */}
-                <div className="flex items-center gap-2 self-end">
-                  <button 
-                    onClick={() => handlePrev(cat.id, cat.projects.length)}
-                    className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
-                    aria-label="Scroll left"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button 
-                    onClick={() => handleNext(cat.id, cat.projects.length)}
-                    className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
-                    aria-label="Scroll right"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
+                {/* 3D Carousel container */}
+                <div className="z-10 relative">
+                  <ThreeDCarousel
+                    projects={cat.projects}
+                    onSelect={onSelect}
+                    activeIndex={currentActive}
+                    setActiveIndex={(idx) => setActiveCategoryIndexes(prev => ({ ...prev, [cat.id]: idx }))}
+                  />
                 </div>
-              </div>
-
-              {/* 3D Carousel container */}
-              <div className="z-10 relative">
-                <ThreeDCarousel
-                  projects={cat.projects}
-                  onSelect={onSelect}
-                  activeIndex={currentActive}
-                  setActiveIndex={(idx) => setActiveCategoryIndexes(prev => ({ ...prev, [cat.id]: idx }))}
-                />
               </div>
             </div>
           );
@@ -1214,18 +1554,40 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
-        className="relative w-full max-w-6xl h-full overflow-y-auto bg-[#0c0e1a]/95 border border-zinc-800/80 rounded-lg"
+        className="relative w-full max-w-6xl h-full lg:max-h-[85vh] overflow-y-auto bg-[#030612]/98 border-2 border-emerald-500/40 rounded-xl shadow-[0_0_50px_rgba(16,185,129,0.35)] shadow-[inset_0_0_20px_rgba(16,185,129,0.15)]"
       >
-        <button onClick={onClose} className="absolute top-8 right-8 z-30 text-zinc-500 hover:text-white transition-colors bg-black/50 p-2 rounded-full">
-          <X size={24} />
+        {/* Hologram Corner Brackets */}
+        <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-cyan-400 pointer-events-none z-30 shadow-[0_0_8px_rgba(34,211,238,0.4)]" />
+        <div className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-cyan-400 pointer-events-none z-30 shadow-[0_0_8px_rgba(34,211,238,0.4)]" />
+        <div className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-cyan-400 pointer-events-none z-30 shadow-[0_0_8px_rgba(34,211,238,0.4)]" />
+        <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-cyan-400 pointer-events-none z-30 shadow-[0_0_8px_rgba(34,211,238,0.4)]" />
+        <div className="absolute inset-1.5 border border-dashed border-emerald-500/10 rounded-lg pointer-events-none z-10" />
+
+        <button onClick={onClose} className="absolute top-8 right-8 z-30 text-zinc-400 hover:text-white hover:scale-110 hover:shadow-[0_0_12px_rgba(34,211,238,0.6)] transition-all bg-[#0a1128]/80 border border-cyan-500/30 p-2.5 rounded-full backdrop-blur-sm">
+          <X size={20} />
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2">
           <div 
             onMouseEnter={() => setIsModalHovered(true)}
             onMouseLeave={() => setIsModalHovered(false)}
-            className="relative aspect-video lg:aspect-auto lg:h-[70vh] bg-zinc-950 border-b lg:border-b-0 lg:border-r border-zinc-900 overflow-hidden flex items-center justify-center group"
+            className="relative aspect-video lg:aspect-auto lg:h-[70vh] bg-[#02050b] border-b lg:border-b-0 lg:border-r border-zinc-900 overflow-hidden flex items-center justify-center group"
           >
+            {/* Cyber/Holographic HUD grid cover */}
+            <div 
+              className="absolute inset-0 opacity-[0.14] pointer-events-none z-10" 
+              style={{
+                backgroundImage: "linear-gradient(rgba(16, 185, 129, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.25) 1px, transparent 1px)",
+                backgroundSize: "20px 20px"
+              }}
+            />
+            {/* Hologram sweep laser bar */}
+            <div 
+              className="absolute inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none z-20 shadow-[0_0_12px_rgba(34,211,238,0.7)]"
+              style={{
+                animation: "hologram-sweep 6s linear infinite"
+              }}
+            />
             {embedUrl && isPlaying ? (
               <iframe
                 src={`${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1`}
@@ -1455,14 +1817,16 @@ function MobileNavLink({ href, onClick, children }: { href: string; onClick: () 
 
 function SocialIcon({ icon, href }: { icon: React.ReactNode; href: string }) {
   return (
-    <a 
+    <motion.a 
+      whileHover={{ scale: 1.1, y: -2 }}
+      whileTap={{ scale: 0.95 }}
       href={href} 
       target="_blank"
       rel="noopener noreferrer"
-      className="p-3 border border-zinc-900 rounded-full text-zinc-500 hover:text-white hover:border-zinc-500 hover:bg-zinc-950 transition-all"
+      className="p-3.5 border border-zinc-900 rounded-full text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-950/10 hover:shadow-[0_0_15px_rgba(16,185,129,0.25)] transition-all duration-300 backdrop-blur-sm"
     >
       {icon}
-    </a>
+    </motion.a>
   );
 }
 
@@ -1476,7 +1840,7 @@ function Footer() {
         
         <a 
           href="mailto:sofafauzi@gmail.com" 
-          className="group relative flex items-center gap-4 text-2xl md:text-4xl font-display font-medium text-white hover:text-emerald-450 transition-colors duration-300"
+          className="group relative flex items-center gap-4 text-2xl md:text-3xl lg:text-4xl font-display font-medium text-white hover:text-emerald-400 transition-colors duration-300"
         >
           sofafauzi@gmail.com
           <motion.div 
@@ -1487,10 +1851,19 @@ function Footer() {
           </motion.div>
         </a>
 
+        {/* Social Icons Row */}
+        <div className="flex items-center gap-5 mt-10">
+          <SocialIcon icon={<Linkedin size={22} className="stroke-[1.8]" />} href="https://www.linkedin.com/in/sofa-fauzi-197606392/" />
+          <SocialIcon icon={<Instagram size={22} className="stroke-[1.8]" />} href="https://www.instagram.com/so_sangart/?utm_source=ig_web_button_share_sheet" />
+          <SocialIcon icon={<Youtube size={22} className="stroke-[1.8]" />} href="https://youtube.com/@nsofafauzi7676?si=oTZ0tsZV7J-SR6Yk" />
+        </div>
+
         <div className="mt-16 md:mt-20 w-full flex flex-col md:flex-row justify-between items-center gap-8 text-zinc-500 font-mono text-[10px] tracking-widest uppercase">
           <p>© 2026 NUR SOFA FAUZI. ALL RIGHTS RESERVED.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-emerald-400 hover:tracking-wider text-zinc-500 transition-all duration-300">DRIBBBLE</a>
+            <a href="https://www.linkedin.com/in/sofa-fauzi-197606392/" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 hover:tracking-wider text-zinc-500 transition-all duration-300">LINKEDIN</a>
+            <a href="https://www.instagram.com/so_sangart/?utm_source=ig_web_button_share_sheet" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 hover:tracking-wider text-zinc-500 transition-all duration-300">INSTAGRAM</a>
+            <a href="https://youtube.com/@nsofafauzi7676?si=oTZ0tsZV7J-SR6Yk" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 hover:tracking-wider text-zinc-500 transition-all duration-300">YOUTUBE</a>
           </div>
         </div>
       </div>
@@ -1504,7 +1877,7 @@ function ShowreelSection({ onSelect }: { onSelect: (p: Project) => void }) {
   if (!showreelProject) return null;
 
   return (
-    <section className="relative px-6 md:px-12 py-16 md:py-20 bg-transparent border-t border-zinc-900/40 overflow-hidden">
+    <section id="showreel" className="relative px-6 md:px-12 py-16 md:py-20 bg-transparent border-t border-zinc-900/40 overflow-hidden">
 
       {/* Grid vertical line extensions */}
       <div className="absolute top-0 bottom-0 left-6 md:left-12 w-[1px] bg-zinc-900/40 pointer-events-none" />
@@ -1543,48 +1916,117 @@ function ShowreelSection({ onSelect }: { onSelect: (p: Project) => void }) {
           </div>
         </div>
 
-        {/* Cinematic Video player frame */}
-        <div className="relative w-full aspect-video rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden group shadow-[0_0_50px_rgba(0,0,0,0.9)]">
-          {/* Scanning Overlay lines */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.3)_50%),linear-gradient(90deg,rgba(16,185,129,0.01),rgba(0,0,0,0),rgba(6,182,212,0.01))] bg-[size:100%_4px,6px_100%] pointer-events-none z-10 opacity-70" />
-          
-          {/* Camera guidelines crosshair bracket overlays */}
-          <div className="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
-          <div className="absolute top-6 right-6 w-8 h-8 border-t-2 border-r-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
-          <div className="absolute bottom-6 left-6 w-8 h-8 border-b-2 border-l-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
-          <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
+        {/* Cinematic Video player frame with macOS-Style Browser Wrapper */}
+        <div className="relative w-full rounded-xl bg-[#070913] border border-zinc-800/90 overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.95)] border-emerald-500/10 flex flex-col">
+          {/* macOS Browser Header Mockup */}
+          <div className="w-full h-10 sm:h-11 bg-[#161720] border-b border-zinc-950/50 px-3 sm:px-4 flex items-center justify-between select-none shrink-0 pointer-events-auto">
+            {/* Left controls */}
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              {/* Window control lights */}
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]" />
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]" />
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f]" />
+              </div>
+              
+              {/* Sidebar toggle icon */}
+              <div className="hidden sm:flex items-center gap-1 text-zinc-500/80">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2" />
+                  <path d="M9 3v18" />
+                </svg>
+                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 translate-y-[0.5px]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
 
-          <div className="absolute bottom-8 right-16 z-10 bg-black/80 px-3 py-1.5 rounded-full border border-zinc-800/60 backdrop-blur-sm pointer-events-none font-mono text-[9px] tracking-widest text-emerald-400 hidden sm:block">
-            {showreelProject.title.toUpperCase()} // LOOPS_ACTIVE
+              {/* Navigation Back & Forward glyphs */}
+              <div className="hidden md:flex items-center gap-3 text-zinc-600 ml-1">
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 cursor-not-allowed hover:text-zinc-500" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 cursor-not-allowed hover:text-zinc-500" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Centered browser search / url identifier bar */}
+            <div className="flex-1 max-w-xs sm:max-w-md mx-3">
+              <div className="w-full h-6 sm:h-7 bg-[#23242e]/80 border border-zinc-950/25 rounded-md flex items-center justify-start px-2 sm:px-3 text-zinc-500">
+                <svg viewBox="0 0 24 24" className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Right toolbar controls */}
+            <div className="flex items-center gap-3 sm:gap-4 text-zinc-500">
+              {/* Share */}
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" x2="12" y1="2" y2="15" />
+              </svg>
+
+              {/* Plus */}
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19" />
+                <line x1="5" x2="19" y1="12" y2="12" />
+              </svg>
+
+              {/* Tab Grid layers */}
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 cursor-pointer hover:text-[#06b6d4] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="12" height="12" x="8" y="8" rx="1.5" />
+                <path d="M4 12V6a2 2 0 0 1 2-2h6" />
+              </svg>
+            </div>
           </div>
 
-          {/* Video Iframe Embed */}
-          <div className="w-full h-full pointer-events-none scale-[1.01] origin-center select-none bg-zinc-950">
-            <iframe
-              src="https://www.youtube.com/embed/YkSDYaHYifk?autoplay=1&loop=1&playlist=YkSDYaHYifk&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1"
-              className="w-full h-full"
-              title="Showreel Continuous Loop"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              draggable="false"
-            />
-          </div>
+          {/* Actual Video View Panel maintaining exact aspect ratio */}
+          <div className="relative w-full aspect-video overflow-hidden">
+            {/* Scanning Overlay lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.3)_50%),linear-gradient(90deg,rgba(16,185,129,0.01),rgba(0,0,0,0),rgba(6,182,212,0.01))] bg-[size:100%_4px,6px_100%] pointer-events-none z-10 opacity-70" />
+            
+            {/* Camera guidelines crosshair bracket overlays */}
+            <div className="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
+            <div className="absolute top-6 right-6 w-8 h-8 border-t-2 border-r-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
+            <div className="absolute bottom-6 left-6 w-8 h-8 border-b-2 border-l-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
+            <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-emerald-500/25 group-hover:border-emerald-400/60 transition-colors duration-500 z-10" />
 
-          {/* Premium Interaction Overlay Trigger */}
-          <div 
-            onClick={() => onSelect(showreelProject)}
-            className="absolute inset-0 bg-black/20 hover:bg-black/5 cursor-pointer transition-colors duration-500 z-10"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="absolute top-4 right-4 md:top-8 md:right-8 px-2 py-1 md:px-4 md:py-2 rounded-full bg-black/90 border border-emerald-500/30 text-white font-display text-[7px] md:text-[9px] font-bold tracking-widest uppercase flex items-center gap-1 md:gap-2 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.1)] group-hover:border-emerald-400 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.25)] transition-all duration-300 pointer-events-auto"
+            <div className="absolute bottom-8 right-16 z-10 bg-black/80 px-3 py-1.5 rounded-full border border-zinc-800/60 backdrop-blur-sm pointer-events-none font-mono text-[9px] tracking-widest text-emerald-400 hidden sm:block">
+              {showreelProject.title.toUpperCase()} // LOOPS_ACTIVE
+            </div>
+
+            {/* Video Iframe Embed */}
+            <div className="w-full h-full pointer-events-none scale-[1.01] origin-center select-none bg-zinc-950">
+              <iframe
+                src="https://www.youtube.com/embed/YkSDYaHYifk?autoplay=1&loop=1&playlist=YkSDYaHYifk&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1"
+                className="w-full h-full"
+                title="Showreel Continuous Loop"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                draggable="false"
+              />
+            </div>
+
+            {/* Premium Interaction Overlay Trigger */}
+            <div 
+              onClick={() => onSelect(showreelProject)}
+              className="absolute inset-0 bg-black/20 hover:bg-black/5 cursor-pointer transition-colors duration-500 z-10"
             >
-              <span className="p-0.5 md:p-1 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full text-black flex items-center justify-center">
-                <Play size={6} fill="currentColor" className="translate-x-[0.5px] md:hidden" />
-                <Play size={8} fill="currentColor" className="translate-x-[0.5px] hidden md:block" />
-              </span>
-              Expand Full Experience
-            </motion.div>
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute top-4 right-4 md:top-8 md:right-8 px-2 py-1 md:px-4 md:py-2 rounded-full bg-black/90 border border-emerald-500/30 text-white font-display text-[7px] md:text-[9px] font-bold tracking-widest uppercase flex items-center gap-1 md:gap-2 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.1)] group-hover:border-emerald-400 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.25)] transition-all duration-300 pointer-events-auto"
+              >
+                <span className="p-0.5 md:p-1 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full text-black flex items-center justify-center">
+                  <Play size={6} fill="currentColor" className="translate-x-[0.5px] md:hidden" />
+                  <Play size={8} fill="currentColor" className="translate-x-[0.5px] hidden md:block" />
+                </span>
+                Expand Full Experience
+              </motion.div>
+            </div>
           </div>
         </div>
 

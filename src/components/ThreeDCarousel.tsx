@@ -311,33 +311,80 @@ function ThreeDCarouselCard({
       }}
       transition={{
         type: "spring",
-        stiffness: 300,
-        damping: 30,
+        stiffness: 180,
+        damping: 22,
+        mass: 0.9,
       }}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="absolute select-none overflow-hidden rounded-xl border bg-zinc-950 transition-colors duration-500"
+      className="absolute select-none overflow-hidden rounded-xl border bg-[#050914] transition-colors duration-300"
       style={{
         width: `${cardWidth}px`,
         aspectRatio: "16 / 9",
-        boxShadow: cardShadow,
+        boxShadow: isActive 
+          ? "0 0 25px rgba(16, 185, 129, 0.25), inset 0 0 15px rgba(16, 185, 129, 0.2)"
+          : cardShadow,
         zIndex: zIndex,
         borderColor: isActive && isHovered 
-          ? "rgba(16, 185, 129, 0.45)" 
+          ? "rgba(34, 211, 238, 0.7)" 
           : isActive 
-          ? "rgba(16, 185, 129, 0.25)" 
-          : "rgba(228, 228, 231, 0.8)",
+          ? "rgba(16, 185, 129, 0.55)" 
+          : "rgba(16, 185, 129, 0.2)",
         transformStyle: "preserve-3d",
         cursor: isActive ? "pointer" : "zoom-in",
       }}
     >
+      <style>{`
+        @keyframes hologram-sweep {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+      `}</style>
+
+      {/* Cyber/Holographic HUD grid matrix background (very light) */}
+      <div 
+        className="absolute inset-0 opacity-[0.14] pointer-events-none z-10" 
+        style={{
+          backgroundImage: "linear-gradient(rgba(16, 185, 129, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.2) 1px, transparent 1px)",
+          backgroundSize: "16px 16px"
+        }}
+      />
+
+      {/* Laser Sweep Bar */}
+      <div 
+        className="absolute inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none z-20 shadow-[0_0_10px_rgba(34,211,238,0.7)]"
+        style={{
+          animation: "hologram-sweep 5s linear infinite"
+        }}
+      />
+
+      {/* Futuristic Corner Brackets */}
+      <div className={`absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+      <div className={`absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+      <div className={`absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+      <div className={`absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+
+      {/* Inner double border outline */}
+      <div className={`absolute inset-1.5 border border-dashed rounded-lg pointer-events-none transition-all duration-500 z-10 ${
+        isActive ? 'border-emerald-500/25' : 'border-zinc-800/10'
+      }`} />
+
+      {/* Static HUD readings */}
+      <div className="absolute top-3 left-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
+        SYS_LNK: 0x8F9A
+      </div>
+      
+      <div className="absolute top-3 right-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
+        HOLO_PRJ_ON
+      </div>
+
       {/* Static Thumbnail Layer */}
       <img
         src={project.thumbnailUrl}
         alt={project.title}
-        className="absolute inset-0 w-full h-full object-cover opacity-85 transition-transform duration-700 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-700 pointer-events-none"
         style={{
           transform: isActive && isHovered 
             ? `scale(${isCroppedProject ? 1.20 : 1.04})` 
