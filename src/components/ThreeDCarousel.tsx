@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useState, useRef, useEffect } from "react";
 import { Project } from "../constants";
 import { ArrowUpRight } from "lucide-react";
@@ -250,22 +250,64 @@ function ThreeDCarouselCard({
   onCardClick,
 }: CardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Motion Values for raw cursor position
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Very smooth Spring configuration to damp pointer movement (giving it weight/fluidity)
+  const springConfig = { damping: 22, stiffness: 180, mass: 0.65 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+
+  // Map normalized mouse inputs (-0.5 to 0.5) smoothly to 3D rotation angles
+  const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [12, -12]);
+  const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-12, 12]);
+
+  // Combine smooth x & y to transform a dynamic holographic reflective light overlay string
+  const glowBg = useTransform(
+    [smoothMouseX, smoothMouseY],
+    ([x, y]) => {
+      const posX = 50 + (x as number) * 80;
+      const posY = 50 + (y as number) * 80;
+      return `radial-gradient(circle 280px at ${posX}% ${posY}%, rgba(34, 211, 238, 0.45) 0%, transparent 100%)`;
+    }
+  );
 
   const handleMouseEnter = () => {
     if (!isActive) return;
     setIsHovered(true);
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isActive || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    // Normalize cursor position to value between -0.5 and 0.5
+    const xNormalized = (e.clientX - rect.left) / width - 0.5;
+    const yNormalized = (e.clientY - rect.top) / height - 0.5;
+
+    mouseX.set(xNormalized);
+    mouseY.set(yNormalized);
+  };
+
   const handleMouseLeave = () => {
     setIsHovered(false);
+    mouseX.set(0);
+    mouseY.set(0);
   };
 
   useEffect(() => {
     if (!isActive) {
       setIsHovered(false);
+      mouseX.set(0);
+      mouseY.set(0);
     }
-  }, [isActive]);
+  }, [isActive, mouseX, mouseY]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
@@ -302,6 +344,7 @@ function ThreeDCarouselCard({
 
   return (
     <motion.div
+      ref={cardRef}
       animate={{
         x: xTranslation,
         scale: cardScale,
@@ -318,112 +361,135 @@ function ThreeDCarouselCard({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="absolute select-none overflow-hidden rounded-xl border bg-[#050914] transition-colors duration-300"
+      className="absolute select-none"
       style={{
         width: `${cardWidth}px`,
         aspectRatio: "16 / 9",
-        boxShadow: isActive 
-          ? "0 0 25px rgba(16, 185, 129, 0.25), inset 0 0 15px rgba(16, 185, 129, 0.2)"
-          : cardShadow,
         zIndex: zIndex,
-        borderColor: isActive && isHovered 
-          ? "rgba(34, 211, 238, 0.7)" 
-          : isActive 
-          ? "rgba(16, 185, 129, 0.55)" 
-          : "rgba(16, 185, 129, 0.2)",
         transformStyle: "preserve-3d",
         cursor: isActive ? "pointer" : "zoom-in",
       }}
     >
-      <style>{`
-        @keyframes hologram-sweep {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
-        }
-      `}</style>
-
-      {/* Cyber/Holographic HUD grid matrix background (very light) */}
-      <div 
-        className="absolute inset-0 opacity-[0.14] pointer-events-none z-10" 
+      {/* 3D Interactive Tilting Inner Card container */}
+      <motion.div
+        className="w-full h-full relative overflow-hidden rounded-xl border bg-[#050914] transition-colors duration-300"
         style={{
-          backgroundImage: "linear-gradient(rgba(16, 185, 129, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.2) 1px, transparent 1px)",
-          backgroundSize: "16px 16px"
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
+          boxShadow: isActive 
+            ? "0 0 25px rgba(16, 185, 129, 0.25), inset 0 0 15px rgba(16, 185, 129, 0.2)"
+            : cardShadow,
+          borderColor: isActive && isHovered 
+            ? "rgba(34, 211, 238, 0.7)" 
+            : isActive 
+            ? "rgba(16, 185, 129, 0.55)" 
+            : "rgba(16, 185, 129, 0.2)",
         }}
-      />
+      >
+        <style>{`
+          @keyframes hologram-sweep {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+          }
+        `}</style>
 
-      {/* Laser Sweep Bar */}
-      <div 
-        className="absolute inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none z-20 shadow-[0_0_10px_rgba(34,211,238,0.7)]"
-        style={{
-          animation: "hologram-sweep 5s linear infinite"
-        }}
-      />
+        {/* Futuristic Holographic Specular/Reflection Gloss Overlay aligned perfectly to cursor */}
+        {isActive && (
+          <motion.div 
+            className="absolute inset-0 pointer-events-none z-20 mix-blend-screen pointer-events-none"
+            style={{
+              background: glowBg,
+              opacity: isHovered ? 0.22 : 0,
+              transition: "opacity 0.4s ease-out",
+            }}
+          />
+        )}
 
-      {/* Futuristic Corner Brackets */}
-      <div className={`absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
-      <div className={`absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
-      <div className={`absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
-      <div className={`absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+        {/* Cyber/Holographic HUD grid matrix background (very light) */}
+        <div 
+          className="absolute inset-0 opacity-[0.14] pointer-events-none z-10" 
+          style={{
+            backgroundImage: "linear-gradient(rgba(16, 185, 129, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.2) 1px, transparent 1px)",
+            backgroundSize: "16px 16px"
+          }}
+        />
 
-      {/* Inner double border outline */}
-      <div className={`absolute inset-1.5 border border-dashed rounded-lg pointer-events-none transition-all duration-500 z-10 ${
-        isActive ? 'border-emerald-500/25' : 'border-zinc-800/10'
-      }`} />
+        {/* Laser Sweep Bar */}
+        <div 
+          className="absolute inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none z-20 shadow-[0_0_10px_rgba(34,211,238,0.7)]"
+          style={{
+            animation: "hologram-sweep 5s linear infinite"
+          }}
+        />
 
-      {/* Static HUD readings */}
-      <div className="absolute top-3 left-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
-        SYS_LNK: 0x8F9A
-      </div>
-      
-      <div className="absolute top-3 right-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
-        HOLO_PRJ_ON
-      </div>
+        {/* Futuristic Corner Brackets */}
+        <div className={`absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+        <div className={`absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+        <div className={`absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
+        <div className={`absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 ${isActive ? 'border-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.4)]' : 'border-emerald-500/40'} pointer-events-none z-20 transition-all duration-300`} />
 
-      {/* Static Thumbnail Layer */}
-      <img
-        src={project.thumbnailUrl}
-        alt={project.title}
-        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-700 pointer-events-none"
-        style={{
-          transform: isActive && isHovered 
-            ? `scale(${isCroppedProject ? 1.20 : 1.04})` 
-            : `scale(${isCroppedProject ? 1.15 : 1.0})`,
-        }}
-        draggable="false"
-      />
+        {/* Inner double border outline */}
+        <div className={`absolute inset-1.5 border border-dashed rounded-lg pointer-events-none transition-all duration-500 z-10 ${
+          isActive ? 'border-emerald-500/25' : 'border-zinc-800/10'
+        }`} />
 
-      {/* Modern Vignette Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90 pointer-events-none z-0" />
+        {/* Static HUD readings */}
+        <div className="absolute top-3 left-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
+          SYS_LNK: 0x8F9A
+        </div>
+        
+        <div className="absolute top-3 right-9 font-mono text-[6px] tracking-widest text-emerald-400/70 pointer-events-none z-20 select-none uppercase">
+          HOLO_PRJ_ON
+        </div>
 
-      {/* Hover Action Trigger (Arrow Icon) */}
-      {isActive && (
-        <div className="absolute top-4 right-4 overflow-hidden z-20 pointer-events-none">
-          <div className={`bg-gradient-to-r from-emerald-400 to-cyan-400 text-black p-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.35)] transition-all duration-300 ${
-            isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75"
-          }`}>
-            <ArrowUpRight size={14} />
+        {/* Static Thumbnail Layer */}
+        <img
+          src={project.thumbnailUrl}
+          alt={project.title}
+          className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-750 pointer-events-none"
+          style={{
+            transform: isActive && isHovered 
+              ? `scale(${isCroppedProject ? 1.20 : 1.04})` 
+              : `scale(${isCroppedProject ? 1.15 : 1.0})`,
+          }}
+          draggable="false"
+        />
+
+        {/* Modern Vignette Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90 pointer-events-none z-0" />
+
+        {/* Hover Action Trigger (Arrow Icon) */}
+        {isActive && (
+          <div className="absolute top-4 right-4 overflow-hidden z-20 pointer-events-none">
+            <div className={`bg-gradient-to-r from-emerald-400 to-cyan-400 text-black p-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.35)] transition-all duration-300 ${
+              isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75"
+            }`}>
+              <ArrowUpRight size={14} />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Tag/Badge for Playlists */}
-      {project.episodes && (
-        <div className="absolute top-4 left-4 z-10 font-mono text-[8px] font-bold tracking-widest bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded text-emerald-300">
-          PLAYLIST
-        </div>
-      )}
+        {/* Tag/Badge for Playlists */}
+        {project.episodes && (
+          <div className="absolute top-4 left-4 z-10 font-mono text-[8px] font-bold tracking-widest bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded text-emerald-300">
+            PLAYLIST
+          </div>
+        )}
 
-      {/* Overlay Typography Details */}
-      <div className="absolute bottom-5 left-5 right-5 pointer-events-none z-20">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="w-4 h-[1px] bg-emerald-500/50" />
-          <span className="text-[8px] font-mono tracking-[0.15em] uppercase text-emerald-400">{project.date}</span>
+        {/* Overlay Typography Details */}
+        <div className="absolute bottom-5 left-5 right-5 pointer-events-none z-20">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-4 h-[1px] bg-emerald-500/50" />
+            <span className="text-[8px] font-mono tracking-[0.15em] uppercase text-emerald-400">{project.date}</span>
+          </div>
+          <h4 className="text-base md:text-lg font-display font-bold leading-tight text-white group-hover:text-emerald-300 transition-colors duration-300">
+            {project.title}
+          </h4>
         </div>
-        <h4 className="text-base md:text-lg font-display font-bold leading-tight text-white group-hover:text-emerald-300 transition-colors duration-300">
-          {project.title}
-        </h4>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
