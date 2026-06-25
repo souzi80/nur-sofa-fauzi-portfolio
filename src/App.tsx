@@ -17,7 +17,15 @@ import {
   Camera,
   Upload,
   Download,
-  FileText
+  FileText,
+  MousePointer,
+  PenTool,
+  Type,
+  Video,
+  Volume2,
+  Sparkles,
+  Layers,
+  Palette
 } from "lucide-react";
 import React, { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
@@ -333,6 +341,32 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
     "CREATOR"
   ];
 
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isMouseOver, setIsMouseOver] = useState(false);
+
+  const floatingDesignIcons = [
+    { icon: PenTool, left: "6%", top: "25%", size: 26, delay: 0, mult: 0.02, color: "text-emerald-400/40" },
+    { icon: Video, left: "88%", top: "18%", size: 24, delay: 0.5, mult: -0.015, color: "text-emerald-500/35" },
+    { icon: Layers, left: "84%", top: "68%", size: 26, delay: 1, mult: 0.025, color: "text-emerald-400/30" },
+    { icon: Palette, left: "8%", top: "72%", size: 24, delay: 1.5, mult: -0.02, color: "text-emerald-500/35" },
+    { icon: Sparkles, left: "12%", top: "54%", size: 20, delay: 0.8, mult: 0.012, color: "text-emerald-400/45" },
+    { icon: Camera, left: "82%", top: "52%", size: 22, delay: 1.2, mult: -0.018, color: "text-emerald-500/30" },
+    { icon: Type, left: "5%", top: "42%", size: 26, delay: 2, mult: 0.015, color: "text-emerald-400/25" },
+    { icon: Play, left: "90%", top: "38%", size: 22, delay: 0.3, mult: -0.022, color: "text-emerald-500/40" }
+  ];
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    setMousePos({ x, y });
+    setIsMouseOver(true);
+  };
+
+  const handleMouseLeaveSection = () => {
+    setIsMouseOver(false);
+  };
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       setKineticIndex((prev) => (prev + 1) % kineticWords.length);
@@ -369,6 +403,8 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
   return (
     <section 
       ref={containerRef} 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeaveSection}
       className="relative min-h-screen flex flex-col justify-center items-center pt-28 pb-16 px-6 md:px-12 overflow-hidden bg-transparent gap-8 md:gap-14"
     >
       {/* Blueprint Grid Blueprint Overlay */}
@@ -383,20 +419,28 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
         }}
       />
 
-      {/* Cyber/Technical Blueprint Corner Accents */}
+      {/* Blueprint Laser Scanline */}
+      <motion.div 
+        animate={{ y: ["0%", "100%", "0%"] }}
+        transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
+        className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent shadow-[0_0_8px_rgba(16,185,129,0.5)] z-10 pointer-events-none"
+        style={{ top: 0 }}
+      />
+
+      {/* Elegant Designer Corner Accents & Framing */}
       <motion.div
         animate={{ opacity: isHidden ? 0 : 1 }}
         transition={{ duration: 1 }}
         className="absolute inset-0 pointer-events-none z-10 select-none pb-6"
       >
-        {/* Diamond sparkling points inside corners */}
+        {/* Decorative corner indicators inside grid limits */}
         <div className="absolute top-28 left-6 md:left-12 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
           <span className="text-emerald-400 font-mono text-sm select-none font-bold animate-pulse">◆</span>
-          <span className="absolute left-4 font-mono text-[8px] text-emerald-500/50 uppercase tracking-widest hidden sm:inline whitespace-nowrap">CAM_01 // SEC_02</span>
+          <span className="absolute left-4 font-mono text-[8px] text-emerald-400/60 uppercase tracking-widest hidden sm:inline whitespace-nowrap">CREATIVE_STUDIO // MOTION_DEV</span>
         </div>
         <div className="absolute top-28 right-6 md:right-12 translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
           <span className="text-emerald-400 font-mono text-sm select-none font-bold animate-pulse">◆</span>
-          <span className="absolute right-4 font-mono text-[8px] text-emerald-500/50 uppercase tracking-widest hidden sm:inline whitespace-nowrap">VIEWPOINT_SYS // BP_04</span>
+          <span className="absolute right-4 font-mono text-[8px] text-emerald-400/60 uppercase tracking-widest hidden sm:inline whitespace-nowrap">JAKARTA_ID // EST_2018</span>
         </div>
         <div className="absolute bottom-12 left-6 md:left-12 -translate-x-1/2 translate-y-1/2 z-20 flex items-center justify-center">
           <span className="text-emerald-400 font-mono text-sm select-none font-bold">◆</span>
@@ -405,67 +449,60 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
           <span className="text-emerald-400 font-mono text-sm select-none font-bold">◆</span>
         </div>
 
-        {/* Live Active Coordinates */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 font-mono text-[8px] text-emerald-500/40 tracking-[0.3em] uppercase hidden xl:flex items-center gap-3">
-          <span className="w-3 h-[1px] bg-emerald-400" />
-          SYS_CRT_GRID // COORD_Z: 4096.22X // SYSTEM_DEPLOYED_STABLE
+        {/* Brand Vertical Accent Line (replacing coordinates) */}
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 font-mono text-[8px] text-emerald-400/60 tracking-[0.3em] uppercase hidden xl:flex items-center gap-3">
+          <span className="w-3 h-[1px] bg-emerald-400/50" />
+          NUR SOFA FAUZI // ART_DIRECTOR // MOTION_PORTFOLIO
         </div>
       </motion.div>
 
-      {/* Floating Retro Designer Handwork Vector Accents */}
+      {/* Floating Elegant Graphic & Motion Designer Icons */}
       {!isHidden && (
         <div className="absolute inset-0 pointer-events-none z-10 select-none overflow-hidden">
-          {/* Eyedropper / Pipette */}
-          <motion.div 
-            animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
-            transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
-            className="absolute left-[38%] top-[55%] hidden xl:block text-emerald-500/30"
-          >
-            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <path d="M11 4l8 8M18 11.5l1.5-1.5a2.5 2.5 0 0 0-3.5-3.5L14.5 8M9 16l-5 5h-1v-1l5-5M15 11l-5.5 5.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </motion.div>
+          {floatingDesignIcons.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.25, filter: "drop-shadow(0 0 12px rgba(16,185,129,0.75))" }}
+                animate={{
+                  x: isMouseOver ? (mousePos.x - window.innerWidth / 2) * item.mult : 0,
+                  y: isMouseOver ? (mousePos.y - window.innerHeight / 2) * item.mult : 0,
+                }}
+                transition={{ type: "spring", stiffness: 60, damping: 18 }}
+                style={{
+                  left: item.left,
+                  top: item.top,
+                }}
+                className={`absolute hidden sm:block ${item.color} cursor-pointer pointer-events-auto transition-colors duration-300`}
+              >
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                    rotate: [0, 8, 0]
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 4 + (index % 3) * 1.5,
+                    ease: "easeInOut",
+                    delay: item.delay
+                  }}
+                >
+                  <IconComponent size={item.size} strokeWidth={1.2} />
+                </motion.div>
+              </motion.div>
+            );
+          })}
 
-          {/* Graphic calligraphy pen tool */}
-          <motion.div 
-            animate={{ y: [0, 8, 0], rotate: [0, -6, 0] }}
-            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-            className="absolute right-[33%] top-[48%] hidden xl:block text-emerald-500/30"
-          >
-            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v8M9 11h6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </motion.div>
-
-          {/* Big Letter T Text Tool */}
-          <motion.div 
-            animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
-            transition={{ repeat: Infinity, duration: 3.8, ease: "easeInOut" }}
-            className="absolute left-[8%] bottom-[42%] hidden xl:block text-emerald-500/25 font-display font-black text-5xl"
-          >
-            T
-          </motion.div>
-
-          {/* Compass / Painting brush tool representation */}
-          <motion.div 
-            animate={{ y: [0, 6, 0], rotate: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 4.2, ease: "easeInOut", delay: 0.5 }}
-            className="absolute right-[12%] bottom-[25%] hidden xl:block text-emerald-500/35"
-          >
-            <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <path d="M18 22H6M12 2v20M12 2A10 10 0 0 1 22 12M12 2A10 10 0 0 0 2 12" strokeLinecap="round"/>
-            </svg>
-          </motion.div>
-
-          {/* Giga-Retro 8-Bit Checkerboard Accent Left */}
-          <div className="absolute left-[5%] top-[18%] w-10 h-24 opacity-[0.25] hidden xl:flex flex-col gap-0.5">
+          {/* Elegant Designer Tech Accents: Background Grid Anchors */}
+          <div className="absolute left-[5%] top-[18%] w-10 h-24 opacity-[0.15] hidden sm:flex flex-col gap-0.5">
             <div className="grid grid-cols-4 gap-0.5 w-full h-full">
               {Array.from({ length: 24 }).map((_, i) => (
                 <div 
                   key={i} 
-                  className={`aspect-square rounded-[3px] ${
+                  className={`aspect-square rounded-[2px] ${
                     ((Math.floor(i / 4) + (i % 4)) % 2 === 0) 
-                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]" 
+                      ? "bg-emerald-400" 
                       : "bg-transparent"
                   }`} 
                 />
@@ -473,15 +510,14 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
             </div>
           </div>
 
-          {/* Giga-Retro 8-Bit Checkerboard Accent Right */}
-          <div className="absolute right-[5%] top-[22%] w-10 h-24 opacity-[0.25] hidden xl:flex flex-col gap-0.5">
+          <div className="absolute right-[5%] top-[22%] w-10 h-24 opacity-[0.15] hidden sm:flex flex-col gap-0.5">
             <div className="grid grid-cols-4 gap-0.5 w-full h-full">
               {Array.from({ length: 24 }).map((_, i) => (
                 <div 
                   key={i} 
-                  className={`aspect-square rounded-[3px] ${
+                  className={`aspect-square rounded-[2px] ${
                     ((Math.floor(i / 4) + (i % 4)) % 2 === 1) 
-                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]" 
+                      ? "bg-emerald-400" 
                       : "bg-transparent"
                   }`} 
                 />
@@ -584,8 +620,12 @@ function HeroSection({ isPlayingIntro, isIntroLeaving }: { isPlayingIntro: boole
             <div className="absolute w-[1px] h-28 bg-emerald-500/8 left-[15%] top-0" />
             <div className="absolute w-[1px] h-28 bg-emerald-500/8 right-[25%] bottom-0" />
 
+            {/* Video Editing Framing Guides (Action Safe / Title Safe) */}
+            <div className="absolute inset-x-4 inset-y-1 sm:inset-x-8 sm:inset-y-2 border border-dashed border-emerald-500/10 pointer-events-none rounded opacity-60" />
+            <div className="absolute inset-x-8 inset-y-2 sm:inset-x-12 sm:inset-y-4 border border-dashed border-emerald-500/5 pointer-events-none rounded opacity-40" />
+
             {/* Asymmetrical Frame Container */}
-            <div className="relative z-10 flex flex-col w-full max-w-[320px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[720px] mx-auto px-2 gap-0 overflow-visible">
+            <div className="relative z-10 flex flex-col w-full max-w-[320px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[720px] mx-auto px-2 gap-0 overflow-visible group/title-box">
               
               {/* Upper-Left Aligned: MOTION */}
               <div className="flex items-baseline gap-3 self-start pl-1 sm:pl-4 md:pl-8 z-10">
