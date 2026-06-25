@@ -339,7 +339,8 @@ function ThreeDCarouselCard({
     "speequal-profile",
     "speequal-gaming-profile",
     "star-corporate-profile",
-    "anggur-merah-launching"
+    "anggur-merah-launching",
+    "dprd-pekanbaru-reses"
   ].includes(project.id);
 
   return (

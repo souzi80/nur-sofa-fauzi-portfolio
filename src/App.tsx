@@ -1049,34 +1049,38 @@ function HoverProjectCard({ project, idx, onSelect }: { project: Project; idx: n
                       {cat.description}
                     </p>
                   </div>
-
-                  {/* Slider Control Buttons */}
-                  <div className="flex items-center gap-2 self-end">
-                    <button 
-                      onClick={() => handlePrev(cat.id, cat.projects.length)}
-                      className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
-                      aria-label="Scroll left"
-                    >
-                      <ChevronLeft size={16} />
-                    </button>
-                    <button 
-                      onClick={() => handleNext(cat.id, cat.projects.length)}
-                      className="p-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-emerald-400 rounded-full shadow-md transition-all focus:outline-none"
-                      aria-label="Scroll right"
-                    >
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
                 </div>
 
-                {/* 3D Carousel container */}
-                <div className="z-10 relative">
+                {/* 3D Carousel container with side buttons */}
+                <div className="z-10 relative px-0 sm:px-14 md:px-16">
                   <ThreeDCarousel
                     projects={cat.projects}
                     onSelect={onSelect}
                     activeIndex={currentActive}
                     setActiveIndex={(idx) => setActiveCategoryIndexes(prev => ({ ...prev, [cat.id]: idx }))}
                   />
+
+                  {/* Left Side Navigation Button */}
+                  <div className="absolute left-0 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
+                    <button
+                      onClick={() => handlePrev(cat.id, cat.projects.length)}
+                      className="pointer-events-auto flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full border border-emerald-500/40 bg-zinc-950/90 hover:bg-[#060b1a]/95 hover:border-cyan-400 hover:text-cyan-400 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_30px_rgba(34,211,238,0.55)] hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft size={26} className="md:w-7 md:h-7 shrink-0" strokeWidth={3} />
+                    </button>
+                  </div>
+
+                  {/* Right Side Navigation Button */}
+                  <div className="absolute right-0 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
+                    <button
+                      onClick={() => handleNext(cat.id, cat.projects.length)}
+                      className="pointer-events-auto flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full border border-emerald-500/40 bg-zinc-950/90 hover:bg-[#060b1a]/95 hover:border-cyan-400 hover:text-cyan-400 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_30px_rgba(34,211,238,0.55)] hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight size={26} className="md:w-7 md:h-7 shrink-0" strokeWidth={3} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

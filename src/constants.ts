@@ -517,6 +517,23 @@ export const PROJECTS: Project[] = [
     ]
   },
   {
+    id: "dprd-pekanbaru-reses",
+    title: "DPRD KOTA PEKANBARU - RESES",
+    category: "Motion Graphic Animation",
+    date: "August 2023",
+    description: "An elegant, highly educational motion graphics video detailing the legislative recess (Reses) programs of the Pekanbaru City Regional House of Representatives. Designed to simplify civic functions, it clearly explains how council members gather, discuss, and advocate for local community aspirations.",
+    thumbnailUrl: "https://img.youtube.com/vi/kceTU5El7aM/maxresdefault.jpg",
+    videoUrl: "https://www.youtube.com/embed/kceTU5El7aM",
+    role: "Lead Motion Designer & Animator",
+    tools: ["Adobe After Effects", "Adobe Illustrator", "Premiere Pro"],
+    deliverables: ["2D Character Animations", "Regional Legislative Infographics", "Process Flow Diagram Overlays"],
+    highlights: [
+      "Transformed complex regional legislative procedures into clean, friendly visual guides",
+      "Dynamic 2D character rigging and smooth transition designs optimized for public viewers",
+      "Engaging narratives detailing the democratic channels of citizen aspiration gathering"
+    ]
+  },
+  {
     id: "kesbangpol-hoax",
     title: "KESBANGPOL PEKANBARU - HOAX",
     category: "Motion Graphic Animation",
