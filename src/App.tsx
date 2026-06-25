@@ -35,6 +35,7 @@ import { ThreeDCarousel } from "./components/ThreeDCarousel";
 import { ExportCvModal } from "./components/ExportCvModal";
 import defaultLogo from "../Logo.png";
 import defaultProfilePhoto from "./sofa_profile.png";
+import sofa2 from "../SOFA 2.png";
 import introVideo from "../LOGO OPENING NUR SOFA FAUZI.mp4";
 import rctiLogo from "./rcti_logo.svg";
 import ruangguruLogo from "./Ruangguru_logo.svg";
@@ -1196,10 +1197,11 @@ function ExperienceSection({ onSelectProject }: { onSelectProject?: (project: Pr
           
           {/* PROFILE PHOTO CONTAINER (FRAMELESS) */}
           <div className="group relative aspect-[4/5] flex items-center justify-center overflow-visible select-none py-12">
+            {/* SOFA 2 (Hitam Putih, berubah menjadi Berwarna saat Hover) */}
             <img 
-              src={defaultProfilePhoto} 
+              src={sofa2} 
               alt="Nur Sofa Fauzi" 
-              className="max-w-full max-h-full object-contain select-none z-10 filter drop-shadow-[0_20px_50px_rgba(16,185,129,0.25)] scale-[1.60] hover:scale-[1.65] grayscale hover:grayscale-0 group-hover:grayscale-0 transition-all duration-700 ease-out" 
+              className="max-w-full max-h-full object-contain select-none z-10 filter drop-shadow-[0_20px_50px_rgba(16,185,129,0.25)] scale-[1.60] group-hover:scale-[1.65] grayscale group-hover:grayscale-0 transition-all duration-700 ease-out" 
             />
           </div>
 

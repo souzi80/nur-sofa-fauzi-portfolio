@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, Download, FileText, Check, Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import defaultProfilePhoto from "../sofa_profile.png";
+import sofa2 from "../../SOFA 2.png";
 import qrCodeImage from "../sofa_fauzi_portfolio.png";
 import rctiLogo from "../rcti_logo.svg";
 import ruangguruLogo from "../Ruangguru_logo.svg";
@@ -491,7 +491,7 @@ export function ExportCvModal({ isOpen, onClose }: ExportCvModalProps) {
                     <div className="mb-2 flex justify-center bg-transparent">
                       <div className="w-[150px] aspect-[4/5] flex items-center justify-center bg-transparent overflow-visible relative">
                         <img 
-                          src={defaultProfilePhoto} 
+                          src={sofa2} 
                           alt="Nur Sofa Fauzi Profile Photo" 
                           className="max-w-full max-h-full object-contain select-none z-10 grayscale scale-[1.60] origin-[center_17%]"
                           style={{ 
