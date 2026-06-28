@@ -28,7 +28,7 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Autoplay auto-scrolling effect every 4 seconds unless hovered or dragging
+  // Autoplay auto-scrolling effect every 10 seconds unless hovered or dragging
   useEffect(() => {
     if (projects.length <= 1) return;
     
@@ -36,7 +36,7 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
       if (!isContainerHovered && !isDragging) {
         setActiveIndex((activeIndex + 1) % projects.length);
       }
-    }, 4200); // 4.2 seconds is right in the 3-5 seconds sweet spot
+    }, 10000); // 10 seconds interval as requested
 
     return () => clearInterval(interval);
   }, [activeIndex, projects.length, isContainerHovered, isDragging, setActiveIndex]);
@@ -236,6 +236,34 @@ interface CardProps {
   onCardClick: () => void;
 }
 
+function getVideoId(url: string | undefined): string {
+  if (!url) return "";
+  try {
+    if (url.includes("/embed/")) {
+      const parts = url.split("/embed/");
+      const afterEmbed = parts[parts.length - 1];
+      return afterEmbed.split("?")[0];
+    }
+    if (url.includes("youtu.be/")) {
+      const parts = url.split("youtu.be/");
+      const afterBe = parts[parts.length - 1];
+      return afterBe.split("?")[0];
+    }
+    if (url.includes("youtube.com/watch")) {
+      const urlObj = new URL(url);
+      return urlObj.searchParams.get("v") || "";
+    }
+    if (url.includes("youtube.com/shorts/")) {
+      const parts = url.split("youtube.com/shorts/");
+      const afterShorts = parts[parts.length - 1];
+      return afterShorts.split("?")[0];
+    }
+  } catch (err) {
+    console.warn("Error parsing video ID", err);
+  }
+  return "";
+}
+
 function ThreeDCarouselCard({
   project,
   isActive,
@@ -250,6 +278,8 @@ function ThreeDCarouselCard({
   onCardClick,
 }: CardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showLoopPreview, setShowLoopPreview] = useState(false);
+  const timerRef = useRef<any>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -309,6 +339,27 @@ function ThreeDCarouselCard({
     }
   }, [isActive, mouseX, mouseY]);
 
+  useEffect(() => {
+    if (isActive) {
+      // Still for 0.75 seconds, then show animated preview automatically (no hover needed)
+      timerRef.current = setTimeout(() => {
+        setShowLoopPreview(true);
+      }, 750);
+    } else {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setShowLoopPreview(false);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [isActive]);
+
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
@@ -342,6 +393,8 @@ function ThreeDCarouselCard({
     "anggur-merah-launching",
     "dprd-pekanbaru-reses"
   ].includes(project.id);
+
+  const videoId = getVideoId(project.videoUrl);
 
   return (
     <motion.div
@@ -446,6 +499,18 @@ function ThreeDCarouselCard({
           HOLO_PRJ_ON
         </div>
 
+        {/* GIF-like Autoplay / Loop muted preview on cursor hover after 2 seconds */}
+        {showLoopPreview && videoId && (
+          <div className="absolute inset-0 bg-black pointer-events-none select-none z-10 transition-opacity duration-500 opacity-100">
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+              className="w-full h-full border-none pointer-events-none scale-[1.03]"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
+        )}
+
         {/* Static Thumbnail Layer */}
         <img
           src={project.thumbnailUrl}
@@ -460,7 +525,7 @@ function ThreeDCarouselCard({
         />
 
         {/* Modern Vignette Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90 pointer-events-none z-10" />
 
         {/* Hover Action Trigger (Arrow Icon) */}
         {isActive && (

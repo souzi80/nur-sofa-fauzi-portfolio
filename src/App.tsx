@@ -1567,11 +1567,24 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeVideoUrl, setActiveVideoUrl] = useState(project.videoUrl);
   const [isModalHovered, setIsModalHovered] = useState(false);
+  const [activeScene, setActiveScene] = useState<"cover" | "scene1" | "scene2" | "scene3">("cover");
+  const [showLoopPreview, setShowLoopPreview] = useState(false);
 
   React.useEffect(() => {
     setActiveVideoUrl(project.videoUrl);
     setIsPlaying(false);
+    setActiveScene("cover");
+    setShowLoopPreview(false);
   }, [project]);
+
+  React.useEffect(() => {
+    if (isModalHovered && !isPlaying) {
+      // Play visual preview loop immediately on hover (no delay)
+      setShowLoopPreview(true);
+    } else {
+      setShowLoopPreview(false);
+    }
+  }, [isModalHovered, isPlaying]);
 
   const embedUrl = getEmbedUrl(activeVideoUrl);
 
@@ -1587,6 +1600,26 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
     console.warn("Error parsing video ID in modal", err);
   }
 
+  // Calculate projected static scene image
+  let displayImageUrl = project.thumbnailUrl;
+  if (activeScene === "scene1" && videoId) {
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/1.jpg`;
+  } else if (activeScene === "scene2" && videoId) {
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/2.jpg`;
+  } else if (activeScene === "scene3" && videoId) {
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/3.jpg`;
+  }
+
+  // Calculate embed URL with scene start-time offsets for interactive preview play
+  let embedUrlWithStart = embedUrl;
+  if (isPlaying) {
+    let startParam = "";
+    if (activeScene === "scene1") startParam = "&start=5";
+    else if (activeScene === "scene2") startParam = "&start=15";
+    else if (activeScene === "scene3") startParam = "&start=30";
+    embedUrlWithStart = `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1${startParam}`;
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -1594,7 +1627,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12"
     >
-      <div className="absolute inset-0 bg-[#06070f]/80 backdrop-blur-md" onClick={onClose} />
+      <div className="absolute inset-0 bg-[#06070f]/85 backdrop-blur-md" onClick={onClose} />
       
       <motion.div 
         initial={{ y: 50, opacity: 0 }}
@@ -1613,7 +1646,8 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
           <X size={20} />
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+          {/* Main Stage (Left Screen) */}
           <div 
             onMouseEnter={() => setIsModalHovered(true)}
             onMouseLeave={() => setIsModalHovered(false)}
@@ -1634,19 +1668,20 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                 animation: "hologram-sweep 6s linear infinite"
               }}
             />
-            {embedUrl && isPlaying ? (
+            
+            {embedUrlWithStart && isPlaying ? (
               <iframe
-                src={`${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1`}
+                src={`${embedUrlWithStart}`}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             ) : (
               <>
-                {/* Autoplay / Loop muted preview on cursor hover (Always mounted to continue playing on hover re-entry) */}
-                {videoId && (
+                {/* Instant Autoplay / Loop muted preview on hover (GIF-like) */}
+                {videoId && showLoopPreview && (
                   <div 
-                    className={`absolute inset-0 bg-black pointer-events-none select-none transition-opacity duration-500 ${isModalHovered ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                    className="absolute inset-0 bg-black pointer-events-none select-none transition-opacity duration-500 opacity-100 z-10"
                   >
                     <iframe
                       src={`https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
@@ -1658,9 +1693,11 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                   </div>
                 )}
                 
+                {/* Projected Screen Image Layer */}
                 <img 
-                  src={project.thumbnailUrl} 
+                  src={displayImageUrl} 
                   alt={project.title} 
+                  onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
                   className="w-full h-full object-cover opacity-60 transition-transform duration-700"
                   style={{
                     transform: [
@@ -1688,13 +1725,21 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-black/10 hover:bg-black/20 transition-colors duration-300">
                   <div 
                     onClick={() => setIsPlaying(true)}
-                    className="w-20 h-20 rounded-full border border-white flex items-center justify-center cursor-pointer hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] group animate-fade-in"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-white flex items-center justify-center cursor-pointer hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] group animate-fade-in"
                   >
                     <Play size={24} fill="currentColor" className="translate-x-[2px]" />
                   </div>
-                  {isModalHovered && (
-                    <span className="absolute top-4 right-4 font-mono text-[8px] tracking-widest text-emerald-400 bg-black/95 px-2.5 py-1 rounded-full border border-emerald-500/20 backdrop-blur-sm shadow-md animate-pulse uppercase select-none pointer-events-none z-30">
-                      Hovering Preview • Click to play with audio
+                  
+                  {/* Scene Badge Overlay */}
+                  {activeScene !== "cover" && (
+                    <div className="absolute top-4 left-4 z-30 font-mono text-[9px] font-bold tracking-widest bg-emerald-500/90 text-black px-2.5 py-1 rounded shadow-md uppercase">
+                      Projecting: {activeScene === "scene1" ? "Scene 01" : activeScene === "scene2" ? "Scene 02" : "Scene 03"}
+                    </div>
+                  )}
+
+                   {showLoopPreview && (
+                    <span className="absolute bottom-6 font-mono text-[8px] tracking-widest text-cyan-400 bg-black/95 px-2.5 py-1 rounded-full border border-cyan-500/20 backdrop-blur-sm shadow-md uppercase select-none pointer-events-none z-30">
+                      Playing Loop • Click play button for audio
                     </span>
                   )}
                 </div>
@@ -1702,75 +1747,199 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
             )}
           </div>
           
-          <div className="p-8 md:p-16 flex flex-col justify-between">
+          {/* Info Sheet (Right Column) */}
+          <div className="p-6 md:p-12 lg:p-16 flex flex-col justify-between overflow-y-auto lg:h-[70vh]">
             <div>
-              {/* Top Quick Navigation for seamless browsing */}
+              {/* Top Quick Navigation */}
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-900/60">
                 <button 
                   onClick={onPrev}
                   className="flex items-center gap-1 text-xs font-mono font-medium tracking-wider text-zinc-500 hover:text-zinc-300 hover:-translate-x-1.5 transition-all duration-300 uppercase"
                 >
-                  <ChevronLeft size={14} className="text-zinc-500 hover:text-zinc-300 pointer-events-none" /> Prev Project
+                  <ChevronLeft size={14} className="text-zinc-500 hover:text-zinc-300 pointer-events-none" /> Prev
                 </button>
                 <span className="text-[10px] font-mono text-zinc-700 uppercase tracking-widest hidden sm:block">
-                  Project Info
+                  Project Presentation
                 </span>
                 <button 
                   onClick={onNext}
                   className="flex items-center gap-1 text-xs font-mono font-medium tracking-wider text-emerald-400 hover:text-emerald-300 hover:translate-x-1.5 transition-all duration-300 uppercase"
                 >
-                  Next Project <ChevronRight size={14} className="text-emerald-400 pointer-events-none" />
+                  Next <ChevronRight size={14} className="text-emerald-400 pointer-events-none" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">{project.category}</span>
-                  <span className="w-4 h-[1px] bg-zinc-800" />
-                  <span className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">{project.date}</span>
-                </div>
-                {project.id === "mozy-app" && (
-                  <div className="flex items-center gap-4 opacity-50 grayscale invert brightness-200">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/HK_Logo.png" alt="HK" className="h-6 w-auto" />
-                    <div className="w-[1px] h-4 bg-white/20" />
-                    <span className="font-display font-bold text-xs">MOZY</span>
-                  </div>
-                )}
+              {/* Category & Date Metadata Header Block */}
+              <div className="mb-4">
+                <span className="inline-block bg-emerald-500 text-black font-mono font-bold text-[10px] tracking-widest px-3 py-1.5 uppercase rounded-sm shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                  {project.category}
+                </span>
               </div>
               
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-[0.9]">{project.title}</h2>
+              {/* Bold Title */}
+              <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase leading-[0.95] mb-4 font-display">
+                {project.title}
+              </h2>
+
+              {/* Role Badge and Date subheader */}
+              <div className="flex flex-wrap items-center gap-2.5 mb-6">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-mono font-medium tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full uppercase">
+                  {project.role || "Motion Graphic Designer"}
+                </div>
+                <span className="font-mono text-[10px] text-zinc-500 tracking-wider uppercase">{project.date}</span>
+              </div>
               
-              <p className="text-zinc-400 leading-relaxed mb-8">
+              {/* Long Description */}
+              <p className="text-zinc-400 leading-relaxed text-sm mb-8 font-light">
                 {project.description}
               </p>
 
-              {/* Project Metadata Details */}
-              {(project.role || (project.tools && project.tools.length > 0) || (project.deliverables && project.deliverables.length > 0)) && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 border-t border-b border-zinc-900 py-6">
-                  {project.role && (
-                    <div className="space-y-1">
-                      <span className="font-mono text-[9px] tracking-widest text-zinc-550 uppercase block">Role</span>
-                      <span className="text-zinc-200 text-sm font-medium">{project.role}</span>
+              {/* Redesigned 3-Column Grid for Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 border-t border-b border-zinc-900/80 py-6">
+                {/* ROLE */}
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-550 uppercase block">Role</span>
+                  <span className="text-zinc-200 text-sm font-semibold block">{project.role || "Motion Designer"}</span>
+                </div>
+
+                {/* TOOLS (As visual framed pills!) */}
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-550 uppercase block">Tools</span>
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {project.tools && project.tools.length > 0 ? (
+                      project.tools.map((t, i) => (
+                        <span key={i} className="text-zinc-300 text-[10px] font-mono px-2 py-0.5 rounded bg-[#0b1228] border border-emerald-500/15 uppercase">
+                          {t}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-zinc-300 text-[10px] font-mono px-2 py-0.5 rounded bg-[#0b1228] border border-emerald-500/15 uppercase">
+                        AE, Premiere
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* DELIVERABLES (As styled vertical bullets!) */}
+                <div className="space-y-1.5">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-550 uppercase block">Deliverables</span>
+                  <ul className="space-y-1 text-zinc-400 text-xs font-light">
+                    {project.deliverables && project.deliverables.length > 0 ? (
+                      project.deliverables.map((d, i) => (
+                        <li key={i} className="flex items-center gap-1.5">
+                          <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                          <span className="truncate">{d}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-center gap-1.5">
+                          <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Motion Graphics</span>
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Final Compositing</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Storyboard Section: Dynamic captures of actual scene keyframes from YouTube */}
+              {videoId && (
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-mono text-xs font-bold tracking-widest text-zinc-400 uppercase">STORYBOARD KEYFRAMES</h4>
+                    <span className="font-mono text-[8px] text-zinc-500 tracking-widest uppercase">4 Scenes</span>
+                  </div>
+                  <p className="text-[10px] font-mono text-zinc-650 tracking-wider uppercase mb-3">
+                    Click any keyframe to project it onto the main screen
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {/* COVER */}
+                    <div 
+                      onClick={() => {
+                        setActiveScene("cover");
+                        setIsPlaying(false);
+                      }}
+                      className={`relative aspect-video rounded border overflow-hidden cursor-pointer group transition-all duration-300 ${
+                        activeScene === "cover" ? "border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)] bg-zinc-950" : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-950"
+                      }`}
+                    >
+                      <img src={project.thumbnailUrl} alt="Cover keyframe" className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
+                      <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">COVER</div>
                     </div>
-                  )}
-                  {project.tools && project.tools.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="font-mono text-[9px] tracking-widest text-zinc-550 uppercase block">Tools</span>
-                      <span className="text-zinc-200 text-xs font-light">{project.tools.join(", ")}</span>
+                    
+                    {/* SCENE 01 */}
+                    <div 
+                      onClick={() => {
+                        setActiveScene("scene1");
+                        setIsPlaying(false);
+                      }}
+                      className={`relative aspect-video rounded border overflow-hidden cursor-pointer group transition-all duration-300 ${
+                        activeScene === "scene1" ? "border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)] bg-zinc-950" : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-950"
+                      }`}
+                    >
+                      <img 
+                        src={`https://img.youtube.com/vi/${videoId}/1.jpg`} 
+                        alt="Scene 01 keyframe" 
+                        onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
+                      <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 01</div>
                     </div>
-                  )}
-                  {project.deliverables && project.deliverables.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="font-mono text-[9px] tracking-widest text-zinc-550 uppercase block">Deliverables</span>
-                      <span className="text-zinc-200 text-xs font-light">{project.deliverables.join(", ")}</span>
+
+                    {/* SCENE 02 */}
+                    <div 
+                      onClick={() => {
+                        setActiveScene("scene2");
+                        setIsPlaying(false);
+                      }}
+                      className={`relative aspect-video rounded border overflow-hidden cursor-pointer group transition-all duration-300 ${
+                        activeScene === "scene2" ? "border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)] bg-zinc-950" : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-950"
+                      }`}
+                    >
+                      <img 
+                        src={`https://img.youtube.com/vi/${videoId}/2.jpg`} 
+                        alt="Scene 02 keyframe" 
+                        onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
+                      <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 02</div>
                     </div>
-                  )}
+
+                    {/* SCENE 03 */}
+                    <div 
+                      onClick={() => {
+                        setActiveScene("scene3");
+                        setIsPlaying(false);
+                      }}
+                      className={`relative aspect-video rounded border overflow-hidden cursor-pointer group transition-all duration-300 ${
+                        activeScene === "scene3" ? "border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)] bg-zinc-950" : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-950"
+                      }`}
+                    >
+                      <img 
+                        src={`https://img.youtube.com/vi/${videoId}/3.jpg`} 
+                        alt="Scene 03 keyframe" 
+                        onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
+                      <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 03</div>
+                    </div>
+                  </div>
                 </div>
               )}
 
+              {/* Playlist Selection */}
               {project.episodes && project.episodes.length > 0 && (
                 <div className="space-y-4 mb-8">
-                  <h4 className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">Select Episode</h4>
+                  <h4 className="font-mono text-xs font-bold tracking-widest text-zinc-400 uppercase">Select Episode</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {project.episodes.map((ep, idx) => {
                       const isActive = activeVideoUrl === ep.videoUrl;
@@ -1796,13 +1965,14 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                 </div>
               )}
 
+              {/* Highlights */}
               {project.id === "main-showreel" && project.highlights && project.highlights.length > 0 && (
                 <div className="space-y-4">
-                  <h4 className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">Key Highlights</h4>
+                  <h4 className="font-mono text-xs font-bold tracking-widest text-zinc-400 uppercase">Key Highlights</h4>
                   <ul className="space-y-4">
                     {project.highlights.map((h, i) => (
                       <li key={i} className="flex items-start gap-3 group">
-                        <ChevronRight size={14} className="mt-1 text-zinc-700 group-hover:text-white transition-colors" />
+                        <ChevronRight size={14} className="mt-1 text-zinc-700 group-hover:text-white transition-colors animate-pulse" />
                         <span className="text-sm text-zinc-300">{h}</span>
                       </li>
                     ))}
@@ -1810,7 +1980,6 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                 </div>
               )}
             </div>
-
           </div>
         </div>
       </motion.div>
