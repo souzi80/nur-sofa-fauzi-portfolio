@@ -166,11 +166,19 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
           const offset = getCircularOffset(idx, progress, projects.length);
           const isActive = idx === activeIndex;
 
+          const isLeftNeighbour = idx === (activeIndex - 1 + projects.length) % projects.length;
+          const isRightNeighbour = idx === (activeIndex + 1) % projects.length;
+          const shouldPreview = isActive || isLeftNeighbour || isRightNeighbour;
+
           const xTranslation = offset * spread;
           const zTranslation = -Math.abs(offset) * 160;
           const rotationY = Math.max(-35, Math.min(35, -offset * 32));
           
-          const cardScale = Math.max(0.75, 1 - Math.abs(offset) * 0.12);
+          // Shrunk active/middle card slightly (from 1.0 to 0.90) and sides proportionally
+          const cardScale = Math.max(0.68, 0.90 - Math.abs(offset) * 0.11);
+          
+          // Move the active center card slightly upwards so it doesn't obstruct background previews
+          const yTranslation = isActive ? -24 : 0;
           
           // Smoothly fade far background cards to 0 before they snap/wrap symmetrically at the back
           const absOffset = Math.abs(offset);
@@ -198,7 +206,9 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
               key={project.id}
               project={project}
               isActive={isActive}
+              shouldPreview={shouldPreview}
               xTranslation={xTranslation}
+              yTranslation={yTranslation}
               zTranslation={zTranslation}
               rotationY={rotationY}
               cardScale={cardScale}
@@ -225,7 +235,9 @@ interface CardProps {
   key?: string | number;
   project: Project;
   isActive: boolean;
+  shouldPreview: boolean;
   xTranslation: number;
+  yTranslation: number;
   zTranslation: number;
   rotationY: number;
   cardScale: number;
@@ -267,7 +279,9 @@ function getVideoId(url: string | undefined): string {
 function ThreeDCarouselCard({
   project,
   isActive,
+  shouldPreview,
   xTranslation,
+  yTranslation,
   zTranslation,
   rotationY,
   cardScale,
@@ -340,7 +354,7 @@ function ThreeDCarouselCard({
   }, [isActive, mouseX, mouseY]);
 
   useEffect(() => {
-    if (isActive) {
+    if (shouldPreview) {
       // Still for 0.75 seconds, then show animated preview automatically (no hover needed)
       timerRef.current = setTimeout(() => {
         setShowLoopPreview(true);
@@ -358,7 +372,7 @@ function ThreeDCarouselCard({
         clearTimeout(timerRef.current);
       }
     };
-  }, [isActive]);
+  }, [shouldPreview]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
@@ -401,6 +415,7 @@ function ThreeDCarouselCard({
       ref={cardRef}
       animate={{
         x: xTranslation,
+        y: yTranslation,
         scale: cardScale,
         opacity: cardOpacity,
         rotateY: rotationY,

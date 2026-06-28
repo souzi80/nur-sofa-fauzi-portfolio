@@ -1603,11 +1603,11 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
   // Calculate projected static scene image
   let displayImageUrl = project.thumbnailUrl;
   if (activeScene === "scene1" && videoId) {
-    displayImageUrl = `https://img.youtube.com/vi/${videoId}/1.jpg`;
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/hq1.jpg`;
   } else if (activeScene === "scene2" && videoId) {
-    displayImageUrl = `https://img.youtube.com/vi/${videoId}/2.jpg`;
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/hq2.jpg`;
   } else if (activeScene === "scene3" && videoId) {
-    displayImageUrl = `https://img.youtube.com/vi/${videoId}/3.jpg`;
+    displayImageUrl = `https://img.youtube.com/vi/${videoId}/hq3.jpg`;
   }
 
   // Calculate embed URL with scene start-time offsets for interactive preview play
@@ -1651,7 +1651,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
           <div 
             onMouseEnter={() => setIsModalHovered(true)}
             onMouseLeave={() => setIsModalHovered(false)}
-            className="relative aspect-video lg:aspect-auto lg:h-[70vh] bg-[#02050b] border-b lg:border-b-0 lg:border-r border-zinc-900 overflow-hidden flex items-center justify-center group"
+            className="relative w-full aspect-video bg-[#02050b] border-b lg:border-b-0 lg:border-r border-zinc-900 overflow-hidden flex items-center justify-center group self-center"
           >
             {/* Cyber/Holographic HUD grid cover */}
             <div 
@@ -1884,7 +1884,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                       }`}
                     >
                       <img 
-                        src={`https://img.youtube.com/vi/${videoId}/1.jpg`} 
+                        src={`https://img.youtube.com/vi/${videoId}/hq1.jpg`} 
                         alt="Scene 01 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
                         className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
@@ -1904,7 +1904,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                       }`}
                     >
                       <img 
-                        src={`https://img.youtube.com/vi/${videoId}/2.jpg`} 
+                        src={`https://img.youtube.com/vi/${videoId}/hq2.jpg`} 
                         alt="Scene 02 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
                         className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
@@ -1924,7 +1924,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                       }`}
                     >
                       <img 
-                        src={`https://img.youtube.com/vi/${videoId}/3.jpg`} 
+                        src={`https://img.youtube.com/vi/${videoId}/hq3.jpg`} 
                         alt="Scene 03 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
                         className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
