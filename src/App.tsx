@@ -1617,7 +1617,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
     if (activeScene === "scene1") startParam = "&start=5";
     else if (activeScene === "scene2") startParam = "&start=15";
     else if (activeScene === "scene3") startParam = "&start=30";
-    embedUrlWithStart = `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1${startParam}`;
+    embedUrlWithStart = `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1&vq=hd1080${startParam}`;
   }
 
   return (
@@ -1668,6 +1668,29 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                 animation: "hologram-sweep 6s linear infinite"
               }}
             />
+
+            {/* Left and Right Stage Navigation Buttons */}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/75 hover:bg-emerald-500/20 text-zinc-400 hover:text-emerald-400 border border-zinc-800 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all duration-300 backdrop-blur-md cursor-pointer group/btn"
+              title="Previous Project"
+            >
+              <ChevronLeft size={22} className="group-hover/btn:-translate-x-0.5 transition-transform" />
+            </button>
+
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/75 hover:bg-emerald-500/20 text-zinc-400 hover:text-emerald-400 border border-zinc-800 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all duration-300 backdrop-blur-md cursor-pointer group/btn"
+              title="Next Project"
+            >
+              <ChevronRight size={22} className="group-hover/btn:translate-x-0.5 transition-transform" />
+            </button>
             
             {embedUrlWithStart && isPlaying ? (
               <iframe
@@ -1684,7 +1707,7 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                     className="absolute inset-0 bg-black pointer-events-none select-none transition-opacity duration-500 opacity-100 z-10"
                   >
                     <iframe
-                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1&vq=hd1080`}
                       className="w-full h-full border-none pointer-events-none scale-[1.03]"
                       title="Modal Hover Loop Frame"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1698,8 +1721,9 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                   src={displayImageUrl} 
                   alt={project.title} 
                   onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
-                  className="w-full h-full object-cover opacity-60 transition-transform duration-700"
+                  className="w-full h-full object-cover opacity-60 transition-transform duration-700 contrast-[1.08] saturate-[1.05] brightness-[1.02]"
                   style={{
+                    imageRendering: "-webkit-optimize-contrast",
                     transform: [
                       "mazda-excellence-2024",
                       "mandiri-golfcard-2025",
@@ -1750,23 +1774,15 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
           {/* Info Sheet (Right Column) */}
           <div className="p-6 md:p-12 lg:p-16 flex flex-col justify-between overflow-y-auto lg:h-[70vh]">
             <div>
-              {/* Top Quick Navigation */}
+              {/* Top Quick Navigation replaced with simple clean presentation mode header */}
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-900/60">
-                <button 
-                  onClick={onPrev}
-                  className="flex items-center gap-1 text-xs font-mono font-medium tracking-wider text-zinc-500 hover:text-zinc-300 hover:-translate-x-1.5 transition-all duration-300 uppercase"
-                >
-                  <ChevronLeft size={14} className="text-zinc-500 hover:text-zinc-300 pointer-events-none" /> Prev
-                </button>
-                <span className="text-[10px] font-mono text-zinc-700 uppercase tracking-widest hidden sm:block">
-                  Project Presentation
+                <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Presentation Mode
                 </span>
-                <button 
-                  onClick={onNext}
-                  className="flex items-center gap-1 text-xs font-mono font-medium tracking-wider text-emerald-400 hover:text-emerald-300 hover:translate-x-1.5 transition-all duration-300 uppercase"
-                >
-                  Next <ChevronRight size={14} className="text-emerald-400 pointer-events-none" />
-                </button>
+                <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
+                  Studio Portfolio
+                </span>
               </div>
 
               {/* Category & Date Metadata Header Block */}
@@ -1868,7 +1884,12 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                         activeScene === "cover" ? "border-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)] bg-zinc-950" : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-950"
                       }`}
                     >
-                      <img src={project.thumbnailUrl} alt="Cover keyframe" className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" />
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt="Cover keyframe" 
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity contrast-[1.08] saturate-[1.05] brightness-[1.02]" 
+                        style={{ imageRendering: "-webkit-optimize-contrast" }}
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
                       <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">COVER</div>
                     </div>
@@ -1887,7 +1908,8 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                         src={`https://img.youtube.com/vi/${videoId}/hq1.jpg`} 
                         alt="Scene 01 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
-                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity contrast-[1.08] saturate-[1.05] brightness-[1.02]" 
+                        style={{ imageRendering: "-webkit-optimize-contrast" }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
                       <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 01</div>
@@ -1907,7 +1929,8 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                         src={`https://img.youtube.com/vi/${videoId}/hq2.jpg`} 
                         alt="Scene 02 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
-                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity contrast-[1.08] saturate-[1.05] brightness-[1.02]" 
+                        style={{ imageRendering: "-webkit-optimize-contrast" }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
                       <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 02</div>
@@ -1927,7 +1950,8 @@ function ProjectModal({ project, onClose, onNext, onPrev }: { project: Project; 
                         src={`https://img.youtube.com/vi/${videoId}/hq3.jpg`} 
                         alt="Scene 03 keyframe" 
                         onError={(e) => { e.currentTarget.src = project.thumbnailUrl; }}
-                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" 
+                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity contrast-[1.08] saturate-[1.05] brightness-[1.02]" 
+                        style={{ imageRendering: "-webkit-optimize-contrast" }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent z-10" />
                       <div className="absolute bottom-1.5 left-1.5 font-mono text-[8px] font-semibold text-white tracking-widest z-20">SCENE 03</div>

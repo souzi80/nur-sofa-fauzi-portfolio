@@ -21,6 +21,7 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
   const startXRef = useRef(0);
   const startYRef = useRef(0);
   const isDraggingActiveRef = useRef(false);
+  const startTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -79,6 +80,7 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
     isDraggingActiveRef.current = false;
     startXRef.current = e.clientX;
     startYRef.current = e.clientY;
+    startTimeRef.current = Date.now();
     setDragOffset(0);
   };
 
@@ -123,16 +125,24 @@ export function ThreeDCarousel({ projects, onSelect, activeIndex, setActiveIndex
         containerRef.current?.releasePointerCapture(e.pointerId);
       } catch (err) {}
 
-      const threshold = 60; // minimum drag distance threshold to initiate a transition
-      if (Math.abs(dragOffset) >= threshold) {
+      const duration = Date.now() - startTimeRef.current;
+      // Responsive threshold: smaller on mobile (spread * 0.25 -> ~30px) and capped on desktop
+      const threshold = Math.max(30, Math.min(60, spread * 0.25));
+      const isFlick = duration < 250 && Math.abs(dragOffset) > 20;
+
+      if (Math.abs(dragOffset) >= threshold || isFlick) {
         const dragRatio = dragOffset / spread;
         let change = 0;
-        if (dragOffset > 0) {
-          // Dragged to the right -> view previous items
-          change = -Math.max(1, Math.round(dragRatio));
+        if (Math.abs(dragRatio) > 1) {
+          if (dragOffset > 0) {
+            // Dragged to the right -> view previous items
+            change = -Math.max(1, Math.round(dragRatio));
+          } else {
+            // Dragged to the left -> view next items
+            change = -Math.min(-1, Math.round(dragRatio));
+          }
         } else {
-          // Dragged to the left -> view next items
-          change = -Math.min(-1, Math.round(dragRatio));
+          change = dragOffset > 0 ? -1 : 1;
         }
         
         const targetIndex = (activeIndex + change + projects.length) % projects.length;
@@ -423,9 +433,9 @@ function ThreeDCarouselCard({
       }}
       transition={{
         type: "spring",
-        stiffness: 180,
-        damping: 22,
-        mass: 0.9,
+        stiffness: 220,
+        damping: 24,
+        mass: 0.8,
       }}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
